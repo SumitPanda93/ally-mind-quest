@@ -88,6 +88,42 @@ serve(async (req) => {
           { role: 'system', content: systemPrompt },
           { role: 'user', content: `Generate ${questionCount} exam questions for ${technology} at ${experienceLevel} level.` }
         ],
+        tools: [
+          {
+            type: 'function',
+            function: {
+              name: 'create_questions',
+              description: 'Return exam questions in structured format',
+              parameters: {
+                type: 'object',
+                properties: {
+                  questions: {
+                    type: 'array',
+                    items: {
+                      type: 'object',
+                      properties: {
+                        question_number: { type: 'integer' },
+                        question_text: { type: 'string' },
+                        option_a: { type: 'string' },
+                        option_b: { type: 'string' },
+                        option_c: { type: 'string' },
+                        option_d: { type: 'string' },
+                        correct_answer: { type: 'string', enum: ['A','B','C','D','a','b','c','d'] },
+                        explanation: { type: 'string' },
+                        topic: { type: 'string' }
+                      },
+                      required: ['question_number','question_text','option_a','option_b','option_c','option_d','correct_answer','explanation','topic'],
+                      additionalProperties: false
+                    }
+                  }
+                },
+                required: ['questions'],
+                additionalProperties: false
+              }
+            }
+          }
+        ],
+        tool_choice: { type: 'function', function: { name: 'create_questions' } }
       }),
     });
 
@@ -113,16 +149,54 @@ serve(async (req) => {
     }
 
     const data = await response.json();
-    let questionsText = data.choices[0].message.content;
-    
-    // Extract JSON from markdown code blocks if present
-    if (questionsText.includes('```json')) {
-      questionsText = questionsText.split('```json')[1].split('```')[0].trim();
-    } else if (questionsText.includes('```')) {
-      questionsText = questionsText.split('```')[1].split('```')[0].trim();
+
+    // Prefer tool calling structured output
+    let questions: any[] | null = null;
+
+    try {
+      const toolCalls = data?.choices?.[0]?.message?.tool_calls;
+      if (toolCalls && toolCalls.length > 0) {
+        const argsStr = toolCalls[0]?.function?.arguments ?? '';
+        const parsed = JSON.parse(argsStr);
+        questions = parsed.questions;
+      }
+    } catch (e) {
+      console.warn('Tool call parse failed, will try content extraction', e);
     }
-    
-    const questions = JSON.parse(questionsText);
+
+    if (!questions) {
+      let questionsText = data?.choices?.[0]?.message?.content ?? '';
+      const sanitize = (input: string) => {
+        let s = input.trim();
+
+        // Remove markdown fences
+        s = s.replace(/```json|```/g, '');
+
+        // Replace smart quotes with regular quotes
+        s = s.replace(/[\u2018\u2019\u201C\u201D]/g, '"');
+
+        // Remove trailing commas before } or ]
+        s = s.replace(/,\s*([}\]])/g, '$1');
+
+        // Attempt to extract the largest JSON array in text
+        const match = s.match(/\[\s*{[\s\S]*}\s*\]/);
+        if (match) s = match[0];
+
+        return s;
+      };
+
+      const text = sanitize(questionsText);
+      try {
+        questions = JSON.parse(text);
+      } catch (e) {
+        console.error('Failed to parse AI JSON after sanitization', e, { preview: text.slice(0, 500) });
+        throw new Error('AI returned invalid JSON for questions');
+      }
+    }
+
+    if (!Array.isArray(questions)) {
+      throw new Error('AI did not return an array of questions');
+    }
 
     // Create exam record
     const { data: exam, error: examError } = await supabaseAdmin
