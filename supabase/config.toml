@@ -1,1 +1,13 @@
 project_id = "vopuzvbykyyxayiaiiwz"
+
+[functions.tech-interview]
+verify_jwt = true
+
+[functions.analyze-resume]
+verify_jwt = true
+
+[functions.generate-exam]
+verify_jwt = true
+
+[functions.evaluate-exam]
+verify_jwt = true
