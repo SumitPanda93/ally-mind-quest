@@ -12,7 +12,7 @@ serve(async (req) => {
   }
 
   try {
-    const { fileName } = await req.json();
+    const { fileName, filePath } = await req.json();
     const LOVABLE_API_KEY = Deno.env.get('LOVABLE_API_KEY');
 
     if (!LOVABLE_API_KEY) {
@@ -31,11 +31,31 @@ serve(async (req) => {
     Provide specific, actionable feedback to improve the resume.`;
 
     const userPrompt = `Please provide a comprehensive analysis of a resume file named "${fileName}". 
-    Include strengths, weaknesses, and specific recommendations for improvement. Focus on:
-    1. ATS optimization
-    2. Content quality and achievements
-    3. Technical skills showcase
-    4. Overall presentation`;
+    
+    Provide a detailed evaluation in the following format:
+    
+    **OVERALL SCORE**: [Score out of 100]
+    
+    **STRENGTHS**:
+    - [List key strengths]
+    
+    **AREAS FOR IMPROVEMENT**:
+    - [List improvement areas]
+    
+    **ATS COMPATIBILITY**: [Score and recommendations]
+    
+    **CONTENT QUALITY**: [Feedback on achievements and quantification]
+    
+    **TECHNICAL SKILLS**: [Assessment of skills presentation]
+    
+    **FORMATTING & STRUCTURE**: [Design and readability feedback]
+    
+    **ACTION ITEMS**:
+    1. [Specific actionable recommendation]
+    2. [Specific actionable recommendation]
+    3. [Specific actionable recommendation]
+    
+    Focus on providing concrete, actionable advice that will improve the candidate's job search success.`;
 
     const response = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
       method: 'POST',

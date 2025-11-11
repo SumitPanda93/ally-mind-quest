@@ -2,10 +2,12 @@ import { useNavigate } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { MessageSquare, FileText, BarChart3, LogOut, BookOpen, Trophy } from 'lucide-react';
+import { MessageSquare, FileText, LogOut, BookOpen } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { Badge } from '@/components/ui/badge';
+import InteractiveStat from '@/components/InteractiveStat';
+import PerformanceCard from '@/components/PerformanceCard';
 
 const Dashboard = () => {
   const navigate = useNavigate();
@@ -84,30 +86,30 @@ const Dashboard = () => {
           </Button>
         </div>
 
-        {/* Stats Cards */}
+        {/* Interactive Stats Cards */}
         {stats.totalExams > 0 && (
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
-            <Card>
-              <CardHeader className="pb-2">
-                <CardDescription>Total Exams</CardDescription>
-                <CardTitle className="text-3xl">{stats.totalExams}</CardTitle>
-              </CardHeader>
-            </Card>
-            <Card>
-              <CardHeader className="pb-2">
-                <CardDescription>Average Score</CardDescription>
-                <CardTitle className="text-3xl">{stats.avgScore}%</CardTitle>
-              </CardHeader>
-            </Card>
-            <Card>
-              <CardHeader className="pb-2">
-                <CardDescription>Best Score</CardDescription>
-                <CardTitle className="text-3xl flex items-center gap-2">
-                  {stats.bestScore}%
-                  <Trophy className="h-6 w-6 text-yellow-500" />
-                </CardTitle>
-              </CardHeader>
-            </Card>
+            <InteractiveStat
+              title="Total Exams"
+              value={stats.totalExams}
+              description="Total completed exams"
+              drillDownData={recentExams}
+              type="total"
+            />
+            <InteractiveStat
+              title="Average Score"
+              value={`${stats.avgScore}%`}
+              description="Your average performance"
+              drillDownData={recentExams}
+              type="average"
+            />
+            <InteractiveStat
+              title="Best Score"
+              value={`${stats.bestScore}%`}
+              description="Your highest achievement"
+              drillDownData={recentExams}
+              type="best"
+            />
           </div>
         )}
 
@@ -151,18 +153,7 @@ const Dashboard = () => {
             </CardContent>
           </Card>
 
-          <Card className="hover:shadow-lg transition-shadow">
-            <CardHeader>
-              <BarChart3 className="h-10 w-10 text-accent mb-2" />
-              <CardTitle>Performance</CardTitle>
-              <CardDescription>
-                Track your progress over time
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <p className="text-sm text-muted-foreground">View stats above</p>
-            </CardContent>
-          </Card>
+          <PerformanceCard stats={stats} recentExams={recentExams} />
         </div>
 
         {/* Recent Exams */}

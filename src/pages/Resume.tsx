@@ -34,16 +34,41 @@ const Resume = () => {
 
     setIsAnalyzing(true);
     try {
-      // In a real implementation, you would upload the file and analyze it
-      // For now, we'll simulate an analysis
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        toast.error('Please sign in to analyze resume');
+        return;
+      }
+
+      // Upload file to storage
+      const filePath = `${user.id}/${Date.now()}-${file.name}`;
+      const { error: uploadError } = await supabase.storage
+        .from('resumes')
+        .upload(filePath, file);
+
+      if (uploadError) throw uploadError;
+
+      // Get public URL
+      const { data: urlData } = supabase.storage
+        .from('resumes')
+        .getPublicUrl(filePath);
+
+      // Call edge function with file path
       const { data, error } = await supabase.functions.invoke('analyze-resume', {
-        body: { fileName: file.name }
+        body: { 
+          fileName: file.name,
+          filePath: filePath,
+          fileUrl: urlData.publicUrl
+        }
       });
 
       if (error) throw error;
 
       setAnalysis(data?.analysis || 'Analysis complete. Your resume shows strong technical skills and clear experience progression. Consider adding more quantifiable achievements and specific project outcomes.');
       toast.success('Analysis complete!');
+
+      // Clean up uploaded file after analysis
+      await supabase.storage.from('resumes').remove([filePath]);
     } catch (error: any) {
       console.error('Error:', error);
       toast.error(error.message || 'Failed to analyze resume');
