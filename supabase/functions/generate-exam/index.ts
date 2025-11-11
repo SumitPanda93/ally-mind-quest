@@ -20,23 +20,34 @@ serve(async (req) => {
       throw new Error('LOVABLE_API_KEY is not configured');
     }
 
-    // Initialize Supabase client with service role for backend operations
-    const supabase = createClient(
+    // Get JWT token from header
+    const authHeader = req.headers.get('Authorization');
+    if (!authHeader) {
+      return new Response(
+        JSON.stringify({ error: 'No authorization header' }),
+        { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    // Initialize Supabase client with service role for server operations
+    const supabaseAdmin = createClient(
       Deno.env.get('SUPABASE_URL') ?? '',
       Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
     );
 
-    // Get user from JWT token
-    const authHeader = req.headers.get('Authorization');
-    if (!authHeader) throw new Error('No authorization header');
-    
+    // Verify the user's JWT token
     const token = authHeader.replace('Bearer ', '');
-    const { data: { user }, error: userError } = await supabase.auth.getUser(token);
+    const { data: { user }, error: userError } = await supabaseAdmin.auth.getUser(token);
     
     if (userError || !user) {
       console.error('Auth error:', userError);
-      throw new Error('Unauthorized');
+      return new Response(
+        JSON.stringify({ error: 'Unauthorized' }),
+        { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
     }
+
+    console.log('User authenticated:', user.id);
 
     const systemPrompt = `You are an expert technical exam creator specializing in ${technology}.
     Generate ${questionCount} multiple-choice questions for a ${experienceLevel} level candidate.
@@ -114,7 +125,7 @@ serve(async (req) => {
     const questions = JSON.parse(questionsText);
 
     // Create exam record
-    const { data: exam, error: examError } = await supabase
+    const { data: exam, error: examError } = await supabaseAdmin
       .from('exams')
       .insert({
         user_id: user.id,
@@ -127,7 +138,12 @@ serve(async (req) => {
       .select()
       .single();
 
-    if (examError) throw examError;
+    if (examError) {
+      console.error('Exam insert error:', examError);
+      throw examError;
+    }
+
+    console.log('Exam created:', exam.id);
 
     // Insert questions
     const questionsToInsert = questions.map((q: any) => ({
@@ -143,11 +159,14 @@ serve(async (req) => {
       topic: q.topic
     }));
 
-    const { error: questionsError } = await supabase
+    const { error: questionsError } = await supabaseAdmin
       .from('questions')
       .insert(questionsToInsert);
 
-    if (questionsError) throw questionsError;
+    if (questionsError) {
+      console.error('Questions insert error:', questionsError);
+      throw questionsError;
+    }
 
     return new Response(
       JSON.stringify({ 

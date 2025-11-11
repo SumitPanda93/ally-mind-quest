@@ -20,26 +20,37 @@ serve(async (req) => {
       throw new Error('LOVABLE_API_KEY is not configured');
     }
 
-    // Initialize Supabase client with service role for backend operations
-    const supabase = createClient(
+    // Get JWT token from header
+    const authHeader = req.headers.get('Authorization');
+    if (!authHeader) {
+      return new Response(
+        JSON.stringify({ error: 'No authorization header' }),
+        { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    // Initialize Supabase client with service role for server operations
+    const supabaseAdmin = createClient(
       Deno.env.get('SUPABASE_URL') ?? '',
       Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
     );
 
-    // Get user from JWT token
-    const authHeader = req.headers.get('Authorization');
-    if (!authHeader) throw new Error('No authorization header');
-    
+    // Verify the user's JWT token
     const token = authHeader.replace('Bearer ', '');
-    const { data: { user }, error: userError } = await supabase.auth.getUser(token);
+    const { data: { user }, error: userError } = await supabaseAdmin.auth.getUser(token);
     
     if (userError || !user) {
       console.error('Auth error:', userError);
-      throw new Error('Unauthorized');
+      return new Response(
+        JSON.stringify({ error: 'Unauthorized' }),
+        { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
     }
 
+    console.log('User authenticated:', user.id);
+
     // Get exam details
-    const { data: exam, error: examError } = await supabase
+    const { data: exam, error: examError } = await supabaseAdmin
       .from('exams')
       .select('*')
       .eq('id', examId)
@@ -48,7 +59,7 @@ serve(async (req) => {
     if (examError) throw examError;
 
     // Get all questions
-    const { data: questions, error: questionsError } = await supabase
+    const { data: questions, error: questionsError } = await supabaseAdmin
       .from('questions')
       .select('*')
       .eq('exam_id', examId)
@@ -57,7 +68,7 @@ serve(async (req) => {
     if (questionsError) throw questionsError;
 
     // Get user answers
-    const { data: userAnswers, error: answersError } = await supabase
+    const { data: userAnswers, error: answersError } = await supabaseAdmin
       .from('user_answers')
       .select('*')
       .eq('exam_id', examId);
@@ -149,7 +160,7 @@ serve(async (req) => {
       }));
 
     // Save results
-    const { data: result, error: resultError } = await supabase
+    const { data: result, error: resultError } = await supabaseAdmin
       .from('exam_results')
       .insert({
         exam_id: examId,
@@ -168,7 +179,7 @@ serve(async (req) => {
     if (resultError) throw resultError;
 
     // Update exam status
-    await supabase
+    await supabaseAdmin
       .from('exams')
       .update({ 
         status: 'completed',
