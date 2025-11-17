@@ -40,14 +40,15 @@ const AdminDashboard = () => {
         return;
       }
 
-      // Check if user is admin
-      const { data: profile } = await supabase
-        .from('profiles')
-        .select('experience_level')
+      // Check if user has admin role using secure user_roles table
+      const { data: userRoles, error } = await supabase
+        .from('user_roles' as any)
+        .select('role')
         .eq('user_id', user.id)
-        .single();
+        .eq('role', 'admin')
+        .maybeSingle();
 
-      if (profile?.experience_level !== 'admin') {
+      if (error || !userRoles) {
         toast.error('Access denied. Admin only.');
         navigate('/dashboard');
       }

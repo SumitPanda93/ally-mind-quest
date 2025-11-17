@@ -57,14 +57,16 @@ const ExamTaking = () => {
       if (examError) throw examError;
       setExam(examData);
 
+      // Use questions_without_answers view to prevent answer exposure during active exams
+      // This view conditionally hides correct_answer and explanation based on exam status
       const { data: questionsData, error: questionsError } = await supabase
-        .from('questions')
+        .from('questions_without_answers' as any)
         .select('*')
         .eq('exam_id', examId)
         .order('question_number');
 
       if (questionsError) throw questionsError;
-      setQuestions(questionsData);
+      setQuestions((questionsData as any) as Question[]);
     } catch (error: any) {
       console.error('Error:', error);
       toast.error('Failed to load exam');
@@ -85,15 +87,15 @@ const ExamTaking = () => {
     setIsSubmitting(true);
 
     try {
-      // Save all answers
+      // Save all answers WITHOUT calculating is_correct on client side
+      // The evaluate-exam edge function will calculate correctness server-side
       const answersToSave = Object.entries(answers).map(([questionId, answer]) => {
-        const question = questions.find(q => q.id === questionId);
         return {
           exam_id: examId,
           question_id: questionId,
           user_id: exam.user_id,
           selected_answer: answer,
-          is_correct: answer === question?.correct_answer,
+          is_correct: null, // Will be calculated server-side during evaluation
           time_spent_seconds: 0
         };
       });
