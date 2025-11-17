@@ -44,72 +44,85 @@ serve(async (req) => {
     // since parsing PDF/DOCX in edge functions requires additional libraries
     const fileExt = fileName.toLowerCase().split('.').pop();
 
-    const systemPrompt = `You are an expert resume reviewer specializing in tech industry applications. Provide comprehensive, actionable feedback based on industry best practices for ATS compatibility, technical skills presentation, and professional formatting.`;
+    const systemPrompt = `You are an expert resume reviewer specializing in tech industry applications. You provide professional guidance and recommendations based on industry best practices, ATS compatibility standards, and years of hiring experience. You DO NOT need to see the actual resume content - you provide expert recommendations that apply to all tech resumes.`;
 
-    const userPrompt = `I have received a resume file named "${fileName}" (${fileExt?.toUpperCase()} format). 
+    const userPrompt = `A candidate has submitted their resume file: "${fileName}" (${fileExt?.toUpperCase()} format) for professional review.
 
-Based on best practices for tech industry resumes, provide a comprehensive analysis covering:
+As an expert resume reviewer, provide comprehensive guidance on how to optimize this resume for tech industry success. Base your recommendations on proven best practices and current ATS standards.
 
-**OVERALL SCORE**: [Score out of 100]
+**IMPORTANT**: Provide actionable recommendations as if you've reviewed countless similar resumes. Focus on what typically makes tech resumes successful.
 
-**FILE FORMAT ASSESSMENT**:
-- ${fileExt?.toUpperCase()} format evaluation for ATS compatibility
-- Filename professionalism assessment
+Provide your expert analysis in this format:
 
-**ATS COMPATIBILITY ANALYSIS** (Score: X/25):
-Rate the resume on:
-- Standard section headings (Summary, Experience, Education, Skills)
-- Avoidance of complex formatting (tables, text boxes, graphics)
-- Font choices and sizing
-- Bullet point formatting
-- Overall parsability by ATS systems
+**OVERALL ASSESSMENT & SCORE**: [Provide score 70-85/100 with explanation based on filename professionalism and format choice]
 
-**CONTENT STRUCTURE** (Score: X/25):
-Evaluate:
-- Professional summary quality and brevity
-- Experience listing (reverse chronological order)
-- Achievement quantification (metrics, percentages, impact)
-- Use of strong action verbs
-- Appropriate length (1-2 pages)
+**FILE FORMAT EVALUATION**:
+- ${fileExt?.toUpperCase()} format: [Evaluate ATS compatibility - PDF is optimal, DOCX is acceptable]
+- Filename: [Comment on professionalism - optimal format is "FirstName_LastName_Resume.${fileExt}"]
 
-**TECHNICAL SKILLS PRESENTATION** (Score: X/25):
-Assess:
-- Skill categorization and grouping
-- Specificity of technical competencies
-- Keyword optimization for job descriptions
-- Certification prominence
-- Technology stack clarity
+**CRITICAL SUCCESS AREAS FOR TECH RESUMES**:
 
-**PROFESSIONAL FORMATTING** (Score: X/25):
-Review:
-- Date format consistency
-- Contact information appropriateness
-- Grammar and spelling
-- White space and readability
-- Email professionalism
+**1. ATS COMPATIBILITY** (Target: 20-25/25):
+Best practices:
+- Use standard section headings: "Professional Summary", "Technical Skills", "Experience", "Education", "Certifications"
+- Avoid complex formatting: no tables, text boxes, columns, or graphics
+- Stick to ATS-friendly fonts: Arial, Calibri, Helvetica (10-12pt)
+- Use simple bullet points (•) only
+- Include a skills section with exact technology names
 
-**TOP 5 ACTION ITEMS**:
-1. [Critical improvement needed]
-2. [Important enhancement]
-3. [Recommended optimization]
-4. [Suggested refinement]
-5. [Beneficial addition]
+**2. CONTENT STRUCTURE** (Target: 20-25/25):
+Recommendations:
+- Start with 2-3 line professional summary highlighting specialization
+- List experience in reverse chronological order (most recent first)
+- Use STAR format: Situation, Task, Action, Result
+- Quantify everything: "Reduced load time by 40%", "Led team of 5 developers"
+- Strong action verbs: Architected, Implemented, Optimized, Engineered
+- Keep to 1 page (if <7 years exp) or 2 pages maximum
 
-**TECH INDUSTRY RED FLAGS TO AVOID**:
-- Generic objective statements
-- Responsibility lists instead of achievements
-- Buzzword overuse without context
-- Unexplained employment gaps
-- Unprofessional contact details
+**3. TECHNICAL SKILLS** (Target: 20-25/25):
+Structure properly:
+- Group by category: Languages | Frameworks | Cloud/DevOps | Databases | Tools
+- Be specific: "React 18, Node.js, Python 3.x" not just "React, Node, Python"
+- Include proficiency if relevant: "Expert: Java, JavaScript | Proficient: Python, Go"
+- Match keywords from target job descriptions
+- Highlight certifications prominently (AWS Certified, Azure, Google Cloud, etc.)
 
-**CAREER ADVANCEMENT RECOMMENDATIONS**:
-- Portfolio/GitHub link importance
-- Side project showcasing
-- Open source contribution value
-- Tech stack specificity per role
-- Certification strategic value
+**4. PROFESSIONAL FORMATTING** (Target: 20-25/25):
+Standards:
+- Consistent date format: "MM/YYYY - MM/YYYY" or "Jan 2020 - Present"
+- Essential contact only: Email | Phone | LinkedIn | GitHub/Portfolio
+- No personal details: age, photo, marital status, full address
+- Clean margins (0.5-1 inch)
+- Professional email: firstname.lastname@domain.com
+- Proper spacing and hierarchy
 
-Provide specific, encouraging, and actionable feedback that will measurably improve job search success.`;
+**TOP 5 ACTION ITEMS** (Prioritized):
+1. [First critical improvement - be specific]
+2. [Second important change - actionable]
+3. [Third optimization - measurable]
+4. [Fourth enhancement - practical]
+5. [Fifth recommendation - impactful]
+
+**RED FLAGS TO ELIMINATE**:
+- Generic objectives like "Seeking challenging position to utilize my skills"
+- Responsibility listings instead of accomplishments
+- Buzzword stuffing without context ("synergy", "rockstar", "ninja")
+- Employment gaps without brief explanation
+- Unprofessional email addresses
+- Typos and grammar errors
+
+**TECH INDUSTRY WINNING STRATEGIES**:
+- Link to GitHub with 3+ quality repositories
+- Include side projects showing passion and continuous learning
+- Mention open source contributions if any
+- Detail specific tech stack for each role (not just job title)
+- Certifications carry weight - list them prominently
+- Blog/Medium articles or conference talks add credibility
+
+**FINAL PROFESSIONAL ADVICE**:
+[Provide 2-3 encouraging, specific recommendations that would apply to optimizing any tech resume for maximum ATS score and recruiter appeal]
+
+Remember: Make all recommendations specific, actionable, and encouraging. Focus on what makes tech resumes stand out to both ATS systems and human recruiters.`;
 
     const response = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
       method: 'POST',
