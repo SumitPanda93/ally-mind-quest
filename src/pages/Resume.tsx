@@ -46,7 +46,7 @@ const Resume = () => {
         return;
       }
 
-      // Upload file to storage
+      // Upload file to storage for analysis
       const filePath = `${user.id}/${Date.now()}-${file.name}`;
       const { error: uploadError } = await supabase.storage
         .from('resumes')
@@ -54,15 +54,11 @@ const Resume = () => {
 
       if (uploadError) throw uploadError;
 
-      // Get public URL
-      const { data: urlData } = supabase.storage
-        .from('resumes')
-        .getPublicUrl(filePath);
-
-      // Call edge function with just filename
+      // Call edge function with file path for analysis
       const { data, error } = await supabase.functions.invoke('analyze-resume', {
         body: { 
-          fileName: file.name
+          fileName: file.name,
+          filePath: filePath
         }
       });
 
@@ -70,6 +66,9 @@ const Resume = () => {
 
       setAnalysis(data?.analysis || 'Analysis complete.');
       toast.success('Analysis complete!');
+
+      // Clean up uploaded file after analysis
+      await supabase.storage.from('resumes').remove([filePath]);
     } catch (error: any) {
       console.error('Error:', error);
       toast.error(error.message || 'Failed to analyze resume');
