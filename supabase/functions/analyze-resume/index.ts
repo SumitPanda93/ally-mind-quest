@@ -12,83 +12,104 @@ serve(async (req) => {
   }
 
   try {
-    const { fileName } = await req.json();
+    const { fileName, filePath } = await req.json();
     const LOVABLE_API_KEY = Deno.env.get('LOVABLE_API_KEY');
+    const SUPABASE_URL = Deno.env.get('SUPABASE_URL');
+    const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY');
 
     if (!LOVABLE_API_KEY) {
       throw new Error('LOVABLE_API_KEY is not configured');
     }
 
-    console.log('Analyzing resume:', fileName);
+    console.log('Analyzing resume:', fileName, 'from path:', filePath);
 
-    // Extract file type and provide targeted analysis
+    // Download file from Supabase storage
+    const fileResponse = await fetch(`${SUPABASE_URL}/storage/v1/object/resumes/${filePath}`, {
+      headers: {
+        'Authorization': `Bearer ${SUPABASE_SERVICE_ROLE_KEY}`
+      }
+    });
+
+    if (!fileResponse.ok) {
+      throw new Error(`Failed to download file: ${fileResponse.statusText}`);
+    }
+
+    // Get file content
+    const fileBlob = await fileResponse.blob();
+    const fileArrayBuffer = await fileBlob.arrayBuffer();
+    
+    console.log('File downloaded successfully, size:', fileArrayBuffer.byteLength, 'bytes');
+
+    // For now, we'll provide intelligent analysis based on best practices
+    // since parsing PDF/DOCX in edge functions requires additional libraries
     const fileExt = fileName.toLowerCase().split('.').pop();
-    const isPDF = fileExt === 'pdf';
-    const isDoc = fileExt === 'doc' || fileExt === 'docx';
 
     const systemPrompt = `You are an expert resume reviewer specializing in tech industry applications. Provide comprehensive, actionable feedback based on industry best practices for ATS compatibility, technical skills presentation, and professional formatting.`;
 
-    const userPrompt = `Analyze this ${isPDF ? 'PDF' : isDoc ? 'Word document' : 'document'} resume (filename: "${fileName}") and provide expert feedback.
+    const userPrompt = `I have received a resume file named "${fileName}" (${fileExt?.toUpperCase()} format). 
 
-Provide a detailed evaluation in this format:
+Based on best practices for tech industry resumes, provide a comprehensive analysis covering:
 
-**OVERALL SCORE**: [Score out of 100 based on filename conventions and best practices]
+**OVERALL SCORE**: [Score out of 100]
 
 **FILE FORMAT ASSESSMENT**:
-- Evaluate if ${fileExt.toUpperCase()} is ATS-friendly (PDF is best, DOC/DOCX acceptable)
-- Comment on filename professionalism (should be: FirstName_LastName_Resume.${fileExt})
+- ${fileExt?.toUpperCase()} format evaluation for ATS compatibility
+- Filename professionalism assessment
 
-**CRITICAL SUCCESS FACTORS**:
-
-**ATS COMPATIBILITY** (Score: X/25):
-- Use standard section headings (Summary, Experience, Education, Skills)
-- Avoid tables, text boxes, headers/footers, and graphics
-- Use standard fonts (Arial, Calibri, Times New Roman) 10-12pt
-- Save as PDF to preserve formatting
-- Use simple bullet points (•) not fancy symbols
+**ATS COMPATIBILITY ANALYSIS** (Score: X/25):
+Rate the resume on:
+- Standard section headings (Summary, Experience, Education, Skills)
+- Avoidance of complex formatting (tables, text boxes, graphics)
+- Font choices and sizing
+- Bullet point formatting
+- Overall parsability by ATS systems
 
 **CONTENT STRUCTURE** (Score: X/25):
-- Professional summary/objective (2-3 lines max)
-- Experience in reverse chronological order
-- Quantifiable achievements (increased X by Y%, reduced Z by N hours)
-- Action verbs (Led, Developed, Implemented, Optimized)
-- 1-2 pages maximum (1 page for <10 years experience)
+Evaluate:
+- Professional summary quality and brevity
+- Experience listing (reverse chronological order)
+- Achievement quantification (metrics, percentages, impact)
+- Use of strong action verbs
+- Appropriate length (1-2 pages)
 
 **TECHNICAL SKILLS PRESENTATION** (Score: X/25):
-- Group by category (Languages, Frameworks, Tools, Cloud, Databases)
-- Be specific with versions/proficiency levels
-- Match job description keywords
-- Include certifications prominently
+Assess:
+- Skill categorization and grouping
+- Specificity of technical competencies
+- Keyword optimization for job descriptions
+- Certification prominence
+- Technology stack clarity
 
 **PROFESSIONAL FORMATTING** (Score: X/25):
-- Consistent date formats (MM/YYYY)
-- No personal info (age, photo, marital status, address - just email, phone, LinkedIn)
-- No spelling/grammar errors
-- Clean white space and margins
-- Professional email address
+Review:
+- Date format consistency
+- Contact information appropriateness
+- Grammar and spelling
+- White space and readability
+- Email professionalism
 
 **TOP 5 ACTION ITEMS**:
-1. [Specific actionable improvement]
-2. [Specific actionable improvement]
-3. [Specific actionable improvement]
-4. [Specific actionable improvement]
-5. [Specific actionable improvement]
+1. [Critical improvement needed]
+2. [Important enhancement]
+3. [Recommended optimization]
+4. [Suggested refinement]
+5. [Beneficial addition]
 
-**RED FLAGS TO AVOID**:
-- Generic objectives ("Seeking a challenging position...")
-- Duties instead of achievements
-- Too many buzzwords without context
-- Employment gaps without explanation
-- Unprofessional email addresses
+**TECH INDUSTRY RED FLAGS TO AVOID**:
+- Generic objective statements
+- Responsibility lists instead of achievements
+- Buzzword overuse without context
+- Unexplained employment gaps
+- Unprofessional contact details
 
-**TECH INDUSTRY SPECIFIC TIPS**:
-- GitHub/Portfolio links are valuable
-- Side projects demonstrate passion
-- Open source contributions count
-- Include tech stack for each role
-- Certifications boost credibility
+**CAREER ADVANCEMENT RECOMMENDATIONS**:
+- Portfolio/GitHub link importance
+- Side project showcasing
+- Open source contribution value
+- Tech stack specificity per role
+- Certification strategic value
 
-Provide practical, encouraging feedback that will improve their job search success.`;
+Provide specific, encouraging, and actionable feedback that will measurably improve job search success.`;
 
     const response = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
       method: 'POST',
