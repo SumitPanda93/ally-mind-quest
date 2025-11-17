@@ -59,22 +59,17 @@ const Resume = () => {
         .from('resumes')
         .getPublicUrl(filePath);
 
-      // Call edge function with file path
+      // Call edge function with just filename
       const { data, error } = await supabase.functions.invoke('analyze-resume', {
         body: { 
-          fileName: file.name,
-          filePath: filePath,
-          fileUrl: urlData.publicUrl
+          fileName: file.name
         }
       });
 
       if (error) throw error;
 
-      setAnalysis(data?.analysis || 'Analysis complete. Your resume shows strong technical skills and clear experience progression. Consider adding more quantifiable achievements and specific project outcomes.');
+      setAnalysis(data?.analysis || 'Analysis complete.');
       toast.success('Analysis complete!');
-
-      // Clean up uploaded file after analysis
-      await supabase.storage.from('resumes').remove([filePath]);
     } catch (error: any) {
       console.error('Error:', error);
       toast.error(error.message || 'Failed to analyze resume');
