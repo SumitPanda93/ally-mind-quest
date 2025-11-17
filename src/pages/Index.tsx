@@ -74,7 +74,7 @@ const Index = () => {
         </p>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-          <Card className="text-center hover:shadow-elegant transition-all hover:-translate-y-1 cursor-pointer bg-gradient-to-br from-primary/5 to-primary/10">
+          <Card className="text-center hover:shadow-elegant transition-all hover:-translate-y-1 cursor-pointer bg-gradient-to-br from-primary/5 to-primary/10" onClick={() => navigate('/mentor/tech')}>
             <CardHeader>
               <div className="mx-auto mb-4 h-20 w-20 rounded-full bg-gradient-primary flex items-center justify-center shadow-glow-primary">
                 <MessageSquare className="h-10 w-10 text-white" />
@@ -86,7 +86,7 @@ const Index = () => {
             </CardHeader>
           </Card>
 
-          <Card className="text-center hover:shadow-elegant transition-all hover:-translate-y-1 cursor-pointer bg-gradient-to-br from-secondary/5 to-secondary/10">
+          <Card className="text-center hover:shadow-elegant transition-all hover:-translate-y-1 cursor-pointer bg-gradient-to-br from-secondary/5 to-secondary/10" onClick={() => navigate('/mentor/finance')}>
             <CardHeader>
               <div className="mx-auto mb-4 h-20 w-20 rounded-full bg-gradient-secondary flex items-center justify-center shadow-glow-secondary">
                 <BarChart3 className="h-10 w-10 text-white" />
@@ -98,7 +98,7 @@ const Index = () => {
             </CardHeader>
           </Card>
 
-          <Card className="text-center hover:shadow-elegant transition-all hover:-translate-y-1 cursor-pointer bg-gradient-to-br from-accent/5 to-accent/10">
+          <Card className="text-center hover:shadow-elegant transition-all hover:-translate-y-1 cursor-pointer bg-gradient-to-br from-accent/5 to-accent/10" onClick={() => navigate('/mentor/health')}>
             <CardHeader>
               <div className="mx-auto mb-4 h-20 w-20 rounded-full bg-gradient-accent flex items-center justify-center shadow-glow-accent">
                 <Sparkles className="h-10 w-10 text-white" />
@@ -110,7 +110,7 @@ const Index = () => {
             </CardHeader>
           </Card>
 
-          <Card className="text-center hover:shadow-elegant transition-all hover:-translate-y-1 cursor-pointer bg-gradient-to-br from-muted/5 to-muted/10">
+          <Card className="text-center hover:shadow-elegant transition-all hover:-translate-y-1 cursor-pointer bg-gradient-to-br from-muted/5 to-muted/10" onClick={() => navigate('/mentor/education')}>
             <CardHeader>
               <div className="mx-auto mb-4 h-20 w-20 rounded-full bg-gradient-subtle flex items-center justify-center shadow-elegant">
                 <FileText className="h-10 w-10 text-primary" />
