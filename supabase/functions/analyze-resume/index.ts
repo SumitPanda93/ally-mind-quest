@@ -12,51 +12,56 @@ serve(async (req) => {
   }
 
   try {
-    const { fileName, filePath } = await req.json();
+    const { fileName, filePath, fileUrl } = await req.json();
     const LOVABLE_API_KEY = Deno.env.get('LOVABLE_API_KEY');
+    const SUPABASE_URL = Deno.env.get('SUPABASE_URL');
+    const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY');
 
     if (!LOVABLE_API_KEY) {
       throw new Error('LOVABLE_API_KEY is not configured');
     }
 
-    const systemPrompt = `You are an expert resume reviewer specializing in tech industry applications.
-    Analyze resumes for:
-    - ATS (Applicant Tracking System) compatibility
-    - Technical skills presentation
-    - Achievement quantification
-    - Structure and formatting
-    - Keywords and industry terminology
-    - Overall impact and clarity
-    
-    Provide specific, actionable feedback to improve the resume.`;
+    console.log('Analyzing resume:', fileName, 'from path:', filePath);
 
-    const userPrompt = `Please provide a comprehensive analysis of a resume file named "${fileName}". 
-    
-    Provide a detailed evaluation in the following format:
-    
-    **OVERALL SCORE**: [Score out of 100]
-    
-    **STRENGTHS**:
-    - [List key strengths]
-    
-    **AREAS FOR IMPROVEMENT**:
-    - [List improvement areas]
-    
-    **ATS COMPATIBILITY**: [Score and recommendations]
-    
-    **CONTENT QUALITY**: [Feedback on achievements and quantification]
-    
-    **TECHNICAL SKILLS**: [Assessment of skills presentation]
-    
-    **FORMATTING & STRUCTURE**: [Design and readability feedback]
-    
-    **ACTION ITEMS**:
-    1. [Specific actionable recommendation]
-    2. [Specific actionable recommendation]
-    3. [Specific actionable recommendation]
-    
-    Focus on providing concrete, actionable advice that will improve the candidate's job search success.`;
+    // Download file from Supabase storage
+    const fileResponse = await fetch(`${SUPABASE_URL}/storage/v1/object/resumes/${filePath}`, {
+      headers: {
+        'Authorization': `Bearer ${SUPABASE_SERVICE_ROLE_KEY}`
+      }
+    });
 
+    if (!fileResponse.ok) {
+      throw new Error(`Failed to download file: ${fileResponse.statusText}`);
+    }
+
+    // Get file as base64 for PDF analysis
+    const fileBuffer = await fileResponse.arrayBuffer();
+    const base64File = btoa(String.fromCharCode(...new Uint8Array(fileBuffer)));
+    
+    console.log('File downloaded, size:', fileBuffer.byteLength, 'bytes');
+
+    const systemPrompt = `You are an expert resume reviewer specializing in tech industry applications. Analyze the provided resume document and give comprehensive feedback on ATS compatibility, technical skills presentation, achievement quantification, structure, keywords, and overall impact.`;
+
+    const userPrompt = `Analyze this resume (${fileName}) and provide:
+
+**OVERALL SCORE**: [Score out of 100]
+
+**STRENGTHS**:
+- [Key strengths]
+
+**AREAS FOR IMPROVEMENT**:
+- [Improvement areas]
+
+**ATS COMPATIBILITY**: [Score and recommendations]
+
+**TECHNICAL SKILLS**: [Assessment]
+
+**ACTION ITEMS**:
+1. [Specific recommendation]
+2. [Specific recommendation]
+3. [Specific recommendation]`;
+
+    // Call AI with document analysis capabilities
     const response = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
       method: 'POST',
       headers: {
@@ -67,7 +72,18 @@ serve(async (req) => {
         model: 'google/gemini-2.5-flash',
         messages: [
           { role: 'system', content: systemPrompt },
-          { role: 'user', content: userPrompt }
+          { 
+            role: 'user', 
+            content: [
+              { type: 'text', text: userPrompt },
+              { 
+                type: 'image_url', 
+                image_url: { 
+                  url: `data:application/pdf;base64,${base64File}` 
+                } 
+              }
+            ]
+          }
         ],
       }),
     });

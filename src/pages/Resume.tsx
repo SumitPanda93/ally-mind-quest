@@ -17,11 +17,17 @@ const Resume = () => {
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
       const selectedFile = e.target.files[0];
-      if (selectedFile.type === 'application/pdf' || selectedFile.type === 'application/msword') {
+      const validTypes = [
+        'application/pdf',
+        'application/msword',
+        'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+      ];
+      
+      if (validTypes.includes(selectedFile.type)) {
         setFile(selectedFile);
         setAnalysis(null);
       } else {
-        toast.error('Please upload a PDF or DOC file');
+        toast.error('Please upload a PDF, DOC, or DOCX file');
       }
     }
   };

@@ -102,55 +102,7 @@ serve(async (req) => {
 
     const totalScore = ((correctCount / questions.length) * 100).toFixed(2);
 
-    // Generate AI feedback
-    const performanceSummary = `
-    Technology: ${exam.technology}
-    Experience Level: ${exam.experience_level}
-    Difficulty: ${exam.difficulty}
-    Score: ${totalScore}%
-    Correct: ${correctCount}/${questions.length}
-    Incorrect: ${incorrectCount}
-    Unanswered: ${unansweredCount}
-    Topic Scores: ${JSON.stringify(topicScores)}
-    `;
-
-    const systemPrompt = `You are an expert technical mentor providing detailed feedback on exam performance.
-    Analyze the results and provide:
-    1. Overall performance assessment
-    2. Strengths identified
-    3. Specific areas for improvement
-    4. Recommended study topics
-    5. Next steps and learning resources
-    
-    Be encouraging but honest. Focus on actionable advice.`;
-
-    const response = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${LOVABLE_API_KEY}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        model: 'google/gemini-2.5-flash',
-        messages: [
-          { role: 'system', content: systemPrompt },
-          { role: 'user', content: `Provide detailed feedback for this exam result:\n${performanceSummary}` }
-        ],
-      }),
-    });
-
-    if (!response.ok) {
-      console.error('AI gateway error:', response.status);
-      // Continue without AI feedback
-    }
-
-    let aiFeedback = 'Great job completing the exam!';
-    if (response.ok) {
-      const data = await response.json();
-      aiFeedback = data.choices[0].message.content;
-    }
-
-    // Calculate improvement areas
+    // Calculate improvement areas immediately
     const improvementAreas = Object.entries(topicScores)
       .filter(([_, scores]) => (scores.correct / scores.total) < 0.7)
       .map(([topic, scores]) => ({
@@ -159,7 +111,7 @@ serve(async (req) => {
         questionsCount: scores.total
       }));
 
-    // Save results
+    // Save results immediately with placeholder feedback
     const { data: result, error: resultError } = await supabaseAdmin
       .from('exam_results')
       .insert({
@@ -170,7 +122,7 @@ serve(async (req) => {
         incorrect_answers: incorrectCount,
         unanswered: unansweredCount,
         topic_wise_scores: topicScores,
-        ai_feedback: aiFeedback,
+        ai_feedback: 'Generating detailed feedback...',
         improvement_areas: improvementAreas
       })
       .select()
@@ -187,6 +139,57 @@ serve(async (req) => {
       })
       .eq('id', examId);
 
+    // Generate AI feedback in background (non-blocking)
+    const generateFeedback = async () => {
+      try {
+        const performanceSummary = `
+Technology: ${exam.technology}
+Experience Level: ${exam.experience_level}
+Difficulty: ${exam.difficulty}
+Score: ${totalScore}%
+Correct: ${correctCount}/${questions.length}
+Incorrect: ${incorrectCount}
+Unanswered: ${unansweredCount}
+Topic Scores: ${JSON.stringify(topicScores)}`;
+
+        const systemPrompt = `You are an expert technical mentor. Provide concise, actionable feedback covering: 1) Overall assessment 2) Strengths 3) Improvement areas 4) Study recommendations. Keep it brief and practical.`;
+
+        const response = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${LOVABLE_API_KEY}`,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            model: 'google/gemini-2.5-flash-lite',
+            messages: [
+              { role: 'system', content: systemPrompt },
+              { role: 'user', content: performanceSummary }
+            ],
+          }),
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          const aiFeedback = data.choices[0].message.content;
+
+          // Update result with AI feedback
+          await supabaseAdmin
+            .from('exam_results')
+            .update({ ai_feedback: aiFeedback })
+            .eq('id', result.id);
+          
+          console.log('AI feedback generated and saved');
+        }
+      } catch (error) {
+        console.error('Background feedback generation failed:', error);
+      }
+    };
+
+    // Start feedback generation in background
+    generateFeedback();
+
+    // Calculate improvement areas for immediate response
     return new Response(
       JSON.stringify({ 
         result,
