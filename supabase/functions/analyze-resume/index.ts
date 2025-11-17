@@ -36,8 +36,18 @@ serve(async (req) => {
 
     // Get file as base64 for PDF analysis
     const fileBuffer = await fileResponse.arrayBuffer();
-    const base64File = btoa(String.fromCharCode(...new Uint8Array(fileBuffer)));
     
+    // Convert to base64 in chunks to avoid call stack size exceeded
+    const uint8Array = new Uint8Array(fileBuffer);
+    let binaryString = '';
+    const chunkSize = 8192; // Process 8KB at a time
+    
+    for (let i = 0; i < uint8Array.length; i += chunkSize) {
+      const chunk = uint8Array.slice(i, Math.min(i + chunkSize, uint8Array.length));
+      binaryString += String.fromCharCode.apply(null, Array.from(chunk));
+    }
+    
+    const base64File = btoa(binaryString);
     console.log('File downloaded, size:', fileBuffer.byteLength, 'bytes');
 
     const systemPrompt = `You are an expert resume reviewer specializing in tech industry applications. Analyze the provided resume document and give comprehensive feedback on ATS compatibility, technical skills presentation, achievement quantification, structure, keywords, and overall impact.`;
