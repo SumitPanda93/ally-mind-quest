@@ -40,10 +40,10 @@ const Index = () => {
           <div className="flex-1 text-white">
             <div className="flex items-center gap-3 mb-6">
               <img src={mentorIcon} alt="Mentor" className="h-12 w-12" />
-              <h1 className="text-5xl font-bold">TechMock Mentor</h1>
+              <h1 className="text-5xl font-bold">MENTOR</h1>
             </div>
             <p className="text-xl mb-8 text-white/90">
-              Your AI-powered interview coach. Practice mock interviews, get instant feedback, and land your dream tech job.
+              Guidance. Simplified. Your personalized AI mentorship platform for Tech, Finance, Health, and Education.
             </p>
             <div className="flex gap-4">
               <Button size="lg" variant="secondary" onClick={handleGetStarted}>
@@ -66,46 +66,58 @@ const Index = () => {
         </div>
       </section>
 
-      {/* Features Section */}
+      {/* Mentor Categories Section */}
       <section className="container mx-auto px-4 py-20">
-        <h2 className="text-4xl font-bold text-center mb-4">Everything You Need to Succeed</h2>
+        <h2 className="text-4xl font-bold text-center mb-4">Choose Your Mentor</h2>
         <p className="text-center text-muted-foreground mb-12 text-lg">
-          Comprehensive tools to prepare for your next tech interview
+          Get personalized AI-powered guidance in your area of interest
         </p>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          <Card className="text-center hover:shadow-lg transition-shadow">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+          <Card className="text-center hover:shadow-elegant transition-all hover:-translate-y-1 cursor-pointer bg-gradient-to-br from-primary/5 to-primary/10">
             <CardHeader>
-              <div className="mx-auto mb-4 h-16 w-16 rounded-full bg-primary/10 flex items-center justify-center">
-                <MessageSquare className="h-8 w-8 text-primary" />
+              <div className="mx-auto mb-4 h-20 w-20 rounded-full bg-gradient-primary flex items-center justify-center shadow-glow-primary">
+                <MessageSquare className="h-10 w-10 text-white" />
               </div>
-              <CardTitle>AI Mock Interviews</CardTitle>
-              <CardDescription>
-                Practice with realistic AI-powered interview simulations tailored to your target role
+              <CardTitle className="text-2xl">Tech Mentor</CardTitle>
+              <CardDescription className="text-base">
+                Mock interviews, coding assessments, resume analysis, and career guidance for tech professionals
               </CardDescription>
             </CardHeader>
           </Card>
 
-          <Card className="text-center hover:shadow-lg transition-shadow">
+          <Card className="text-center hover:shadow-elegant transition-all hover:-translate-y-1 cursor-pointer bg-gradient-to-br from-secondary/5 to-secondary/10">
             <CardHeader>
-              <div className="mx-auto mb-4 h-16 w-16 rounded-full bg-secondary/10 flex items-center justify-center">
-                <FileText className="h-8 w-8 text-secondary" />
+              <div className="mx-auto mb-4 h-20 w-20 rounded-full bg-gradient-secondary flex items-center justify-center shadow-glow-secondary">
+                <BarChart3 className="h-10 w-10 text-white" />
               </div>
-              <CardTitle>Resume Analysis</CardTitle>
-              <CardDescription>
-                Get AI-powered feedback on your resume with ATS optimization tips and improvements
+              <CardTitle className="text-2xl">Finance Mentor</CardTitle>
+              <CardDescription className="text-base">
+                Personal finance guidance, budget planning, investment tips, and financial goal tracking
               </CardDescription>
             </CardHeader>
           </Card>
 
-          <Card className="text-center hover:shadow-lg transition-shadow">
+          <Card className="text-center hover:shadow-elegant transition-all hover:-translate-y-1 cursor-pointer bg-gradient-to-br from-accent/5 to-accent/10">
             <CardHeader>
-              <div className="mx-auto mb-4 h-16 w-16 rounded-full bg-accent/10 flex items-center justify-center">
-                <BarChart3 className="h-8 w-8 text-accent" />
+              <div className="mx-auto mb-4 h-20 w-20 rounded-full bg-gradient-accent flex items-center justify-center shadow-glow-accent">
+                <Sparkles className="h-10 w-10 text-white" />
               </div>
-              <CardTitle>Performance Tracking</CardTitle>
-              <CardDescription>
-                Monitor your progress with detailed analytics and personalized improvement suggestions
+              <CardTitle className="text-2xl">Health Mentor</CardTitle>
+              <CardDescription className="text-base">
+                Wellness planning, lifestyle guidance, habit tracking, and holistic health recommendations
+              </CardDescription>
+            </CardHeader>
+          </Card>
+
+          <Card className="text-center hover:shadow-elegant transition-all hover:-translate-y-1 cursor-pointer bg-gradient-to-br from-muted/5 to-muted/10">
+            <CardHeader>
+              <div className="mx-auto mb-4 h-20 w-20 rounded-full bg-gradient-subtle flex items-center justify-center shadow-elegant">
+                <FileText className="h-10 w-10 text-primary" />
+              </div>
+              <CardTitle className="text-2xl">Education Mentor</CardTitle>
+              <CardDescription className="text-base">
+                Study planning, concept explanations, exam prep, and personalized learning paths
               </CardDescription>
             </CardHeader>
           </Card>

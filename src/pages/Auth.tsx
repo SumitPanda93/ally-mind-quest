@@ -84,8 +84,8 @@ const Auth = () => {
       <Card className="w-full max-w-md">
         <CardHeader className="text-center">
           <img src={mentorIcon} alt="Mentor" className="h-16 w-16 mx-auto mb-4" />
-          <CardTitle className="text-3xl font-bold">TechMock Mentor</CardTitle>
-          <CardDescription>Your AI-powered interview coach</CardDescription>
+          <CardTitle className="text-3xl font-bold">MENTOR</CardTitle>
+          <CardDescription>Guidance. Simplified.</CardDescription>
         </CardHeader>
         <CardContent>
           <Tabs defaultValue="signin" className="w-full">

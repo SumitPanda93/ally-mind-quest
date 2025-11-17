@@ -77,8 +77,8 @@ const Dashboard = () => {
       <div className="container mx-auto px-4 py-8">
         <div className="flex justify-between items-center mb-8">
           <div>
-            <h1 className="text-4xl font-bold text-primary mb-2">Welcome to TechMock Mentor</h1>
-            <p className="text-muted-foreground">Your AI-powered interview coach</p>
+            <h1 className="text-4xl font-bold text-primary mb-2">Welcome to MENTOR</h1>
+            <p className="text-muted-foreground">Your personalized AI mentorship platform</p>
           </div>
           <Button variant="outline" onClick={handleSignOut}>
             <LogOut className="mr-2 h-4 w-4" />
@@ -113,46 +113,98 @@ const Dashboard = () => {
           </div>
         )}
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          <Card className="hover:shadow-lg transition-shadow cursor-pointer" onClick={() => navigate('/exam-setup')}>
-            <CardHeader>
-              <BookOpen className="h-10 w-10 text-primary mb-2" />
-              <CardTitle>MCQ Mock Exam</CardTitle>
-              <CardDescription>
-                AI-generated multiple choice questions
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <Button className="w-full">Start Exam</Button>
-            </CardContent>
-          </Card>
+        {/* Mentor Categories */}
+        <div className="mb-12">
+          <h2 className="text-2xl font-bold mb-6">Your Mentors</h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            <Card 
+              className="cursor-pointer hover:shadow-elegant transition-all hover:-translate-y-1 bg-gradient-to-br from-primary/5 to-primary/10"
+              onClick={() => navigate('/exam-setup')}
+            >
+              <CardHeader>
+                <div className="flex items-center gap-3">
+                  <div className="p-3 rounded-lg bg-gradient-primary shadow-glow-primary">
+                    <MessageSquare className="h-6 w-6 text-white" />
+                  </div>
+                  <div>
+                    <CardTitle className="text-lg">Tech Mentor</CardTitle>
+                  </div>
+                </div>
+              </CardHeader>
+              <CardContent>
+                <CardDescription>
+                  Mock interviews, coding exams, resume analysis, and tech career guidance
+                </CardDescription>
+              </CardContent>
+            </Card>
 
-          <Card className="hover:shadow-lg transition-shadow cursor-pointer" onClick={() => navigate('/interview')}>
-            <CardHeader>
-              <MessageSquare className="h-10 w-10 text-primary mb-2" />
-              <CardTitle>Mock Interview</CardTitle>
-              <CardDescription>
-                Practice with AI interview simulations
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <Button className="w-full" variant="outline">Start Interview</Button>
-            </CardContent>
-          </Card>
+            <Card 
+              className="cursor-pointer hover:shadow-elegant transition-all hover:-translate-y-1 bg-gradient-to-br from-secondary/5 to-secondary/10 opacity-60"
+            >
+              <CardHeader>
+                <div className="flex items-center gap-3">
+                  <div className="p-3 rounded-lg bg-gradient-secondary shadow-glow-secondary">
+                    <FileText className="h-6 w-6 text-white" />
+                  </div>
+                  <div>
+                    <CardTitle className="text-lg">Finance Mentor</CardTitle>
+                    <Badge variant="secondary" className="mt-1">Coming Soon</Badge>
+                  </div>
+                </div>
+              </CardHeader>
+              <CardContent>
+                <CardDescription>
+                  Budget planning, investment tips, financial goal tracking, and money management
+                </CardDescription>
+              </CardContent>
+            </Card>
 
-          <Card className="hover:shadow-lg transition-shadow cursor-pointer" onClick={() => navigate('/resume')}>
-            <CardHeader>
-              <FileText className="h-10 w-10 text-secondary mb-2" />
-              <CardTitle>Resume Analyzer</CardTitle>
-              <CardDescription>
-                Get AI feedback on your resume
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <Button className="w-full" variant="secondary">Analyze Resume</Button>
-            </CardContent>
-          </Card>
+            <Card 
+              className="cursor-pointer hover:shadow-elegant transition-all hover:-translate-y-1 bg-gradient-to-br from-accent/5 to-accent/10 opacity-60"
+            >
+              <CardHeader>
+                <div className="flex items-center gap-3">
+                  <div className="p-3 rounded-lg bg-gradient-accent shadow-glow-accent">
+                    <MessageSquare className="h-6 w-6 text-white" />
+                  </div>
+                  <div>
+                    <CardTitle className="text-lg">Health Mentor</CardTitle>
+                    <Badge variant="secondary" className="mt-1">Coming Soon</Badge>
+                  </div>
+                </div>
+              </CardHeader>
+              <CardContent>
+                <CardDescription>
+                  Wellness planning, habit tracking, lifestyle guidance, and health recommendations
+                </CardDescription>
+              </CardContent>
+            </Card>
 
+            <Card 
+              className="cursor-pointer hover:shadow-elegant transition-all hover:-translate-y-1 bg-gradient-to-br from-muted/5 to-muted/10 opacity-60"
+            >
+              <CardHeader>
+                <div className="flex items-center gap-3">
+                  <div className="p-3 rounded-lg bg-gradient-subtle shadow-elegant">
+                    <BookOpen className="h-6 w-6 text-primary" />
+                  </div>
+                  <div>
+                    <CardTitle className="text-lg">Education Mentor</CardTitle>
+                    <Badge variant="secondary" className="mt-1">Coming Soon</Badge>
+                  </div>
+                </div>
+              </CardHeader>
+              <CardContent>
+                <CardDescription>
+                  Study planning, concept explanations, exam prep, and personalized learning paths
+                </CardDescription>
+              </CardContent>
+            </Card>
+          </div>
+        </div>
+
+        {/* Performance Card */}
+        <div className="mb-12">
           <PerformanceCard stats={stats} recentExams={recentExams} />
         </div>
 
