@@ -8,94 +8,120 @@ All colors MUST be HSL.
 
 @layer base {
   :root {
+    /* MENTOR Brand Colors */
     --background: 0 0% 100%;
-    --foreground: 220 20% 15%;
+    --foreground: 235 29% 26%; /* Deep Blue shade for text */
 
     --card: 0 0% 100%;
-    --card-foreground: 220 20% 15%;
+    --card-foreground: 235 29% 26%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 220 20% 15%;
+    --popover-foreground: 235 29% 26%;
 
-    --primary: 215 90% 50%;
+    /* Primary: Deep Blue (#1A2A6C) - Trust */
+    --primary: 235 62% 26%;
     --primary-foreground: 0 0% 100%;
+    --primary-glow: 235 62% 35%;
 
-    --secondary: 195 85% 55%;
+    /* Secondary: Electric Purple (#6A0572) - Intelligence */
+    --secondary: 296 100% 22%;
     --secondary-foreground: 0 0% 100%;
+    --secondary-glow: 296 100% 35%;
+
+    /* Accent: Aqua (#00E0FF) - Innovation */
+    --accent: 188 100% 50%;
+    --accent-foreground: 235 62% 26%;
+    --accent-glow: 188 100% 65%;
 
     --muted: 220 15% 95%;
     --muted-foreground: 220 10% 45%;
-
-    --accent: 195 85% 55%;
-    --accent-foreground: 0 0% 100%;
 
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 0 0% 100%;
 
     --border: 220 15% 90%;
     --input: 220 15% 90%;
-    --ring: 215 90% 50%;
+    --ring: 235 62% 26%;
 
     --radius: 0.75rem;
 
-    --gradient-hero: linear-gradient(135deg, hsl(215 90% 50%), hsl(195 85% 55%));
+    /* MENTOR Brand Gradients */
+    --gradient-hero: linear-gradient(135deg, hsl(235 62% 26%), hsl(296 100% 22%), hsl(188 100% 50%));
     --gradient-card: linear-gradient(180deg, hsl(0 0% 100%), hsl(220 15% 98%));
+    --gradient-primary: linear-gradient(135deg, hsl(235 62% 26%), hsl(235 62% 35%));
+    --gradient-secondary: linear-gradient(135deg, hsl(296 100% 22%), hsl(296 100% 35%));
+    --gradient-accent: linear-gradient(135deg, hsl(188 100% 50%), hsl(188 100% 65%));
     
-    --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-    --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-    --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
-    --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+    /* Elegant Shadows with brand colors */
+    --shadow-sm: 0 1px 2px 0 rgba(26, 42, 108, 0.05);
+    --shadow-md: 0 4px 6px -1px rgba(26, 42, 108, 0.1);
+    --shadow-lg: 0 10px 15px -3px rgba(26, 42, 108, 0.1);
+    --shadow-xl: 0 20px 25px -5px rgba(26, 42, 108, 0.15);
+    --shadow-glow: 0 0 40px hsla(188 100% 50% / 0.4);
+    --shadow-elegant: 0 10px 30px -10px hsla(235 62% 26% / 0.3);
+
+    /* Transitions */
+    --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 
     --sidebar-background: 0 0% 98%;
-    --sidebar-foreground: 240 5.3% 26.1%;
-    --sidebar-primary: 240 5.9% 10%;
-    --sidebar-primary-foreground: 0 0% 98%;
+    --sidebar-foreground: 235 29% 26%;
+    --sidebar-primary: 235 62% 26%;
+    --sidebar-primary-foreground: 0 0% 100%;
     --sidebar-accent: 240 4.8% 95.9%;
-    --sidebar-accent-foreground: 240 5.9% 10%;
+    --sidebar-accent-foreground: 235 62% 26%;
     --sidebar-border: 220 13% 91%;
-    --sidebar-ring: 217.2 91.2% 59.8%;
+    --sidebar-ring: 235 62% 26%;
   }
 
   .dark {
-    --background: 220 25% 8%;
+    /* Dark Mode with MENTOR colors */
+    --background: 235 25% 8%;
     --foreground: 0 0% 95%;
 
-    --card: 220 20% 12%;
+    --card: 235 20% 12%;
     --card-foreground: 0 0% 95%;
 
-    --popover: 220 20% 12%;
+    --popover: 235 20% 12%;
     --popover-foreground: 0 0% 95%;
 
-    --primary: 215 90% 55%;
+    /* Lighter shades for dark mode */
+    --primary: 235 62% 45%;
     --primary-foreground: 0 0% 100%;
+    --primary-glow: 235 62% 55%;
 
-    --secondary: 195 85% 60%;
+    --secondary: 296 100% 35%;
     --secondary-foreground: 0 0% 100%;
+    --secondary-glow: 296 100% 50%;
 
-    --muted: 220 15% 20%;
+    --accent: 188 100% 55%;
+    --accent-foreground: 235 25% 8%;
+    --accent-glow: 188 100% 70%;
+
+    --muted: 235 15% 20%;
     --muted-foreground: 220 10% 65%;
-
-    --accent: 195 85% 60%;
-    --accent-foreground: 0 0% 100%;
 
     --destructive: 0 62.8% 50%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 220 15% 20%;
-    --input: 220 15% 20%;
-    --ring: 215 90% 55%;
+    --border: 235 15% 20%;
+    --input: 235 15% 20%;
+    --ring: 235 62% 45%;
 
-    --gradient-hero: linear-gradient(135deg, hsl(215 90% 55%), hsl(195 85% 60%));
-    --gradient-card: linear-gradient(180deg, hsl(220 20% 12%), hsl(220 20% 15%));
+    /* Dark mode gradients */
+    --gradient-hero: linear-gradient(135deg, hsl(235 62% 35%), hsl(296 100% 28%), hsl(188 100% 45%));
+    --gradient-card: linear-gradient(180deg, hsl(235 20% 12%), hsl(235 20% 15%));
+    --gradient-primary: linear-gradient(135deg, hsl(235 62% 35%), hsl(235 62% 45%));
+    --gradient-secondary: linear-gradient(135deg, hsl(296 100% 28%), hsl(296 100% 40%));
+    --gradient-accent: linear-gradient(135deg, hsl(188 100% 45%), hsl(188 100% 60%));
 
-    --sidebar-background: 240 5.9% 10%;
-    --sidebar-foreground: 240 4.8% 95.9%;
-    --sidebar-primary: 224.3 76.3% 48%;
+    --sidebar-background: 235 20% 10%;
+    --sidebar-foreground: 0 0% 95%;
+    --sidebar-primary: 235 62% 45%;
     --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 240 3.7% 15.9%;
-    --sidebar-accent-foreground: 240 4.8% 95.9%;
-    --sidebar-border: 240 3.7% 15.9%;
-    --sidebar-ring: 217.2 91.2% 59.8%;
+    --sidebar-accent: 235 15% 18%;
+    --sidebar-accent-foreground: 0 0% 95%;
+    --sidebar-border: 235 15% 18%;
+    --sidebar-ring: 235 62% 45%;
   }
 }
 
@@ -105,6 +131,10 @@ All colors MUST be HSL.
   }
 
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground font-inter;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-poppins font-bold;
   }
 }
