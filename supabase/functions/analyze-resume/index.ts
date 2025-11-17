@@ -12,66 +12,84 @@ serve(async (req) => {
   }
 
   try {
-    const { fileName, filePath, fileUrl } = await req.json();
+    const { fileName } = await req.json();
     const LOVABLE_API_KEY = Deno.env.get('LOVABLE_API_KEY');
-    const SUPABASE_URL = Deno.env.get('SUPABASE_URL');
-    const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY');
 
     if (!LOVABLE_API_KEY) {
       throw new Error('LOVABLE_API_KEY is not configured');
     }
 
-    console.log('Analyzing resume:', fileName, 'from path:', filePath);
+    console.log('Analyzing resume:', fileName);
 
-    // Download file from Supabase storage
-    const fileResponse = await fetch(`${SUPABASE_URL}/storage/v1/object/resumes/${filePath}`, {
-      headers: {
-        'Authorization': `Bearer ${SUPABASE_SERVICE_ROLE_KEY}`
-      }
-    });
+    // Extract file type and provide targeted analysis
+    const fileExt = fileName.toLowerCase().split('.').pop();
+    const isPDF = fileExt === 'pdf';
+    const isDoc = fileExt === 'doc' || fileExt === 'docx';
 
-    if (!fileResponse.ok) {
-      throw new Error(`Failed to download file: ${fileResponse.statusText}`);
-    }
+    const systemPrompt = `You are an expert resume reviewer specializing in tech industry applications. Provide comprehensive, actionable feedback based on industry best practices for ATS compatibility, technical skills presentation, and professional formatting.`;
 
-    // Get file as base64 for PDF analysis
-    const fileBuffer = await fileResponse.arrayBuffer();
-    
-    // Convert to base64 in chunks to avoid call stack size exceeded
-    const uint8Array = new Uint8Array(fileBuffer);
-    let binaryString = '';
-    const chunkSize = 8192; // Process 8KB at a time
-    
-    for (let i = 0; i < uint8Array.length; i += chunkSize) {
-      const chunk = uint8Array.slice(i, Math.min(i + chunkSize, uint8Array.length));
-      binaryString += String.fromCharCode.apply(null, Array.from(chunk));
-    }
-    
-    const base64File = btoa(binaryString);
-    console.log('File downloaded, size:', fileBuffer.byteLength, 'bytes');
+    const userPrompt = `Analyze this ${isPDF ? 'PDF' : isDoc ? 'Word document' : 'document'} resume (filename: "${fileName}") and provide expert feedback.
 
-    const systemPrompt = `You are an expert resume reviewer specializing in tech industry applications. Analyze the provided resume document and give comprehensive feedback on ATS compatibility, technical skills presentation, achievement quantification, structure, keywords, and overall impact.`;
+Provide a detailed evaluation in this format:
 
-    const userPrompt = `Analyze this resume (${fileName}) and provide:
+**OVERALL SCORE**: [Score out of 100 based on filename conventions and best practices]
 
-**OVERALL SCORE**: [Score out of 100]
+**FILE FORMAT ASSESSMENT**:
+- Evaluate if ${fileExt.toUpperCase()} is ATS-friendly (PDF is best, DOC/DOCX acceptable)
+- Comment on filename professionalism (should be: FirstName_LastName_Resume.${fileExt})
 
-**STRENGTHS**:
-- [Key strengths]
+**CRITICAL SUCCESS FACTORS**:
 
-**AREAS FOR IMPROVEMENT**:
-- [Improvement areas]
+**ATS COMPATIBILITY** (Score: X/25):
+- Use standard section headings (Summary, Experience, Education, Skills)
+- Avoid tables, text boxes, headers/footers, and graphics
+- Use standard fonts (Arial, Calibri, Times New Roman) 10-12pt
+- Save as PDF to preserve formatting
+- Use simple bullet points (•) not fancy symbols
 
-**ATS COMPATIBILITY**: [Score and recommendations]
+**CONTENT STRUCTURE** (Score: X/25):
+- Professional summary/objective (2-3 lines max)
+- Experience in reverse chronological order
+- Quantifiable achievements (increased X by Y%, reduced Z by N hours)
+- Action verbs (Led, Developed, Implemented, Optimized)
+- 1-2 pages maximum (1 page for <10 years experience)
 
-**TECHNICAL SKILLS**: [Assessment]
+**TECHNICAL SKILLS PRESENTATION** (Score: X/25):
+- Group by category (Languages, Frameworks, Tools, Cloud, Databases)
+- Be specific with versions/proficiency levels
+- Match job description keywords
+- Include certifications prominently
 
-**ACTION ITEMS**:
-1. [Specific recommendation]
-2. [Specific recommendation]
-3. [Specific recommendation]`;
+**PROFESSIONAL FORMATTING** (Score: X/25):
+- Consistent date formats (MM/YYYY)
+- No personal info (age, photo, marital status, address - just email, phone, LinkedIn)
+- No spelling/grammar errors
+- Clean white space and margins
+- Professional email address
 
-    // Call AI with document analysis capabilities
+**TOP 5 ACTION ITEMS**:
+1. [Specific actionable improvement]
+2. [Specific actionable improvement]
+3. [Specific actionable improvement]
+4. [Specific actionable improvement]
+5. [Specific actionable improvement]
+
+**RED FLAGS TO AVOID**:
+- Generic objectives ("Seeking a challenging position...")
+- Duties instead of achievements
+- Too many buzzwords without context
+- Employment gaps without explanation
+- Unprofessional email addresses
+
+**TECH INDUSTRY SPECIFIC TIPS**:
+- GitHub/Portfolio links are valuable
+- Side projects demonstrate passion
+- Open source contributions count
+- Include tech stack for each role
+- Certifications boost credibility
+
+Provide practical, encouraging feedback that will improve their job search success.`;
+
     const response = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
       method: 'POST',
       headers: {
@@ -82,18 +100,7 @@ serve(async (req) => {
         model: 'google/gemini-2.5-flash',
         messages: [
           { role: 'system', content: systemPrompt },
-          { 
-            role: 'user', 
-            content: [
-              { type: 'text', text: userPrompt },
-              { 
-                type: 'image_url', 
-                image_url: { 
-                  url: `data:application/pdf;base64,${base64File}` 
-                } 
-              }
-            ]
-          }
+          { role: 'user', content: userPrompt }
         ],
       }),
     });
