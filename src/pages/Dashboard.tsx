@@ -119,7 +119,7 @@ const Dashboard = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             <Card 
               className="cursor-pointer hover:shadow-elegant transition-all hover:-translate-y-1 bg-gradient-to-br from-primary/5 to-primary/10"
-              onClick={() => navigate('/exam-setup')}
+              onClick={() => navigate('/mentor/tech')}
             >
               <CardHeader>
                 <div className="flex items-center gap-3">
@@ -140,6 +140,7 @@ const Dashboard = () => {
 
             <Card 
               className="cursor-pointer hover:shadow-elegant transition-all hover:-translate-y-1 bg-gradient-to-br from-secondary/5 to-secondary/10 opacity-60"
+              onClick={() => navigate('/mentor/finance')}
             >
               <CardHeader>
                 <div className="flex items-center gap-3">
@@ -161,6 +162,7 @@ const Dashboard = () => {
 
             <Card 
               className="cursor-pointer hover:shadow-elegant transition-all hover:-translate-y-1 bg-gradient-to-br from-accent/5 to-accent/10 opacity-60"
+              onClick={() => navigate('/mentor/health')}
             >
               <CardHeader>
                 <div className="flex items-center gap-3">
@@ -182,6 +184,7 @@ const Dashboard = () => {
 
             <Card 
               className="cursor-pointer hover:shadow-elegant transition-all hover:-translate-y-1 bg-gradient-to-br from-muted/5 to-muted/10 opacity-60"
+              onClick={() => navigate('/mentor/education')}
             >
               <CardHeader>
                 <div className="flex items-center gap-3">

@@ -13,6 +13,7 @@ import ExamTaking from "./pages/ExamTaking";
 import ExamResults from "./pages/ExamResults";
 import AdminDashboard from "./pages/AdminDashboard";
 import NotFound from "./pages/NotFound";
+import MentorCategory from "./pages/MentorCategory";
 
 const queryClient = new QueryClient();
 
@@ -32,6 +33,7 @@ const App = () => (
           <Route path="/exam/:examId" element={<ExamTaking />} />
           <Route path="/exam-results/:examId" element={<ExamResults />} />
           <Route path="/admin" element={<AdminDashboard />} />
+          <Route path="/mentor/:category" element={<MentorCategory />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
