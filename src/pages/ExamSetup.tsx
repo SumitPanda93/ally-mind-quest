@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -16,6 +16,17 @@ const ExamSetup = () => {
   const [difficulty, setDifficulty] = useState('intermediate');
   const [questionCount, setQuestionCount] = useState('20');
   const [isGenerating, setIsGenerating] = useState(false);
+
+  useEffect(() => {
+    const checkAuth = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) {
+        toast.error('Please log in to generate exams');
+        navigate('/auth');
+      }
+    };
+    checkAuth();
+  }, [navigate]);
 
   const technologyGroups = {
     'Microsoft Technologies': [
@@ -85,6 +96,14 @@ const ExamSetup = () => {
     setIsGenerating(true);
 
     try {
+      // Verify user is authenticated
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) {
+        toast.error('Please log in to generate exams');
+        navigate('/auth');
+        return;
+      }
+
       const { data, error } = await supabase.functions.invoke('generate-exam', {
         body: { 
           technology, 
