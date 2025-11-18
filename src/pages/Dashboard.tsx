@@ -139,7 +139,7 @@ const Dashboard = () => {
             </Card>
 
             <Card 
-              className="cursor-pointer hover:shadow-elegant transition-all hover:-translate-y-1 bg-gradient-to-br from-secondary/5 to-secondary/10 opacity-60"
+              className="cursor-pointer hover:shadow-elegant transition-all hover:-translate-y-1 bg-gradient-to-br from-secondary/5 to-secondary/10"
               onClick={() => navigate('/mentor/finance')}
             >
               <CardHeader>
@@ -149,7 +149,6 @@ const Dashboard = () => {
                   </div>
                   <div>
                     <CardTitle className="text-lg">Finance Mentor</CardTitle>
-                    <Badge variant="secondary" className="mt-1">Coming Soon</Badge>
                   </div>
                 </div>
               </CardHeader>

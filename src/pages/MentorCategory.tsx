@@ -92,11 +92,11 @@ const MentorCategory = () => {
         <div className="relative container mx-auto px-4 py-16">
           <Button
             variant="ghost"
-            onClick={() => navigate("/")}
+            onClick={() => navigate("/dashboard")}
             className="mb-4 text-white hover:bg-white/10"
           >
             <ArrowLeft className="mr-2 h-4 w-4" />
-            Back to Home
+            Back to Dashboard
           </Button>
           <div className="flex items-center gap-4 text-white">
             <div className="h-14 w-14 rounded-xl bg-background/10 backdrop-blur flex items-center justify-center border border-white/20">
