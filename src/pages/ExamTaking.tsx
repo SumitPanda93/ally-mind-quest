@@ -54,22 +54,37 @@ const ExamTaking = () => {
         .eq('id', examId)
         .single();
 
-      if (examError) throw examError;
+      if (examError) {
+        toast.error('Exam not found or you do not have access');
+        navigate('/dashboard');
+        return;
+      }
+      
       setExam(examData);
 
-      // Use questions_without_answers view to prevent answer exposure during active exams
-      // This view conditionally hides correct_answer and explanation based on exam status
+      // Use questions_without_answers view
       const { data: questionsData, error: questionsError } = await supabase
         .from('questions_without_answers' as any)
         .select('*')
         .eq('exam_id', examId)
         .order('question_number');
 
-      if (questionsError) throw questionsError;
+      if (questionsError) {
+        toast.error('Failed to load questions');
+        navigate('/dashboard');
+        return;
+      }
+
+      if (!questionsData || questionsData.length === 0) {
+        toast.error('No questions found for this exam');
+        navigate('/dashboard');
+        return;
+      }
+
       setQuestions((questionsData as any) as Question[]);
     } catch (error: any) {
-      console.error('Error:', error);
-      toast.error('Failed to load exam');
+      console.error('Error loading exam:', error);
+      toast.error(error.message || 'Failed to load exam');
       navigate('/dashboard');
     } finally {
       setIsLoading(false);
@@ -85,17 +100,20 @@ const ExamTaking = () => {
 
   const handleSubmit = async () => {
     setIsSubmitting(true);
+    setShowSubmitDialog(false);
 
     try {
+      // Show progress toast
+      toast.loading('Saving your answers...', { id: 'exam-submit' });
+
       // Save all answers WITHOUT calculating is_correct on client side
-      // The evaluate-exam edge function will calculate correctness server-side
       const answersToSave = Object.entries(answers).map(([questionId, answer]) => {
         return {
           exam_id: examId,
           question_id: questionId,
           user_id: exam.user_id,
           selected_answer: answer,
-          is_correct: null, // Will be calculated server-side during evaluation
+          is_correct: null,
           time_spent_seconds: 0
         };
       });
@@ -106,21 +124,26 @@ const ExamTaking = () => {
 
       if (answersError) throw answersError;
 
-      // Evaluate exam
+      toast.loading('Evaluating your exam...', { id: 'exam-submit' });
+
+      // Evaluate exam - this will process in background
       const { error: evaluateError } = await supabase.functions.invoke('evaluate-exam', {
         body: { examId }
       });
 
-      if (evaluateError) throw evaluateError;
+      if (evaluateError) {
+        toast.error('Evaluation started but may take longer than expected. Check your results page.', { id: 'exam-submit' });
+        navigate(`/exam-results/${examId}`);
+        return;
+      }
 
-      toast.success('Exam submitted successfully!');
+      toast.success('Exam submitted! Generating detailed feedback...', { id: 'exam-submit' });
       navigate(`/exam-results/${examId}`);
     } catch (error: any) {
       console.error('Error:', error);
-      toast.error(error.message || 'Failed to submit exam');
+      toast.error(error.message || 'Failed to submit exam', { id: 'exam-submit' });
     } finally {
       setIsSubmitting(false);
-      setShowSubmitDialog(false);
     }
   };
 

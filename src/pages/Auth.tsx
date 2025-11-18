@@ -38,19 +38,39 @@ const Auth = () => {
     const email = formData.get('signup-email') as string;
     const password = formData.get('signup-password') as string;
 
+    if (!email || !password) {
+      toast.error('Please fill in all fields');
+      setIsLoading(false);
+      return;
+    }
+
+    if (password.length < 6) {
+      toast.error('Password must be at least 6 characters');
+      setIsLoading(false);
+      return;
+    }
+
     try {
-      const { error } = await supabase.auth.signUp({
+      const { data, error } = await supabase.auth.signUp({
         email,
         password,
         options: {
-          emailRedirectTo: `${window.location.origin}/`
+          emailRedirectTo: `${window.location.origin}/dashboard`
         }
       });
 
       if (error) throw error;
-      toast.success('Account created successfully!');
+      
+      if (data.user) {
+        toast.success('Account created successfully! You can now sign in.');
+      }
     } catch (error: any) {
-      toast.error(error.message);
+      console.error('Signup error:', error);
+      if (error.message.includes('already registered')) {
+        toast.error('This email is already registered. Please sign in instead.');
+      } else {
+        toast.error(error.message || 'Failed to create account');
+      }
     } finally {
       setIsLoading(false);
     }
@@ -64,16 +84,33 @@ const Auth = () => {
     const email = formData.get('signin-email') as string;
     const password = formData.get('signin-password') as string;
 
+    if (!email || !password) {
+      toast.error('Please fill in all fields');
+      setIsLoading(false);
+      return;
+    }
+
     try {
-      const { error } = await supabase.auth.signInWithPassword({
+      const { data, error } = await supabase.auth.signInWithPassword({
         email,
         password,
       });
 
       if (error) throw error;
-      toast.success('Signed in successfully!');
+      
+      if (data.session) {
+        toast.success('Signed in successfully!');
+        navigate('/dashboard');
+      }
     } catch (error: any) {
-      toast.error(error.message);
+      console.error('Signin error:', error);
+      if (error.message.includes('Invalid login credentials')) {
+        toast.error('Invalid email or password. Please try again.');
+      } else if (error.message.includes('Email not confirmed')) {
+        toast.error('Please confirm your email address before signing in.');
+      } else {
+        toast.error(error.message || 'Failed to sign in');
+      }
     } finally {
       setIsLoading(false);
     }

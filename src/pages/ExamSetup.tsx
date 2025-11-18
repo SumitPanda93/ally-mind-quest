@@ -94,6 +94,7 @@ const ExamSetup = () => {
     }
 
     setIsGenerating(true);
+    const toastId = 'exam-generation';
 
     try {
       // Verify user is authenticated
@@ -104,6 +105,8 @@ const ExamSetup = () => {
         return;
       }
 
+      toast.loading('Generating your exam questions...', { id: toastId });
+
       const { data, error } = await supabase.functions.invoke('generate-exam', {
         body: { 
           technology, 
@@ -113,13 +116,20 @@ const ExamSetup = () => {
         }
       });
 
-      if (error) throw error;
+      if (error) {
+        console.error('Generation error:', error);
+        throw new Error(error.message || 'Failed to generate exam');
+      }
 
-      toast.success('Exam generated successfully!');
+      if (!data || !data.examId) {
+        throw new Error('Invalid response from exam generation');
+      }
+
+      toast.success(`${data.questionCount} questions generated!`, { id: toastId });
       navigate(`/exam/${data.examId}`);
     } catch (error: any) {
-      console.error('Error:', error);
-      toast.error(error.message || 'Failed to generate exam');
+      console.error('Error generating exam:', error);
+      toast.error(error.message || 'Failed to generate exam. Please try again.', { id: toastId });
     } finally {
       setIsGenerating(false);
     }
