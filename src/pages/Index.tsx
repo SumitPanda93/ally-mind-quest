@@ -2,18 +2,30 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { MessageSquare, FileText, BarChart3, Sparkles } from 'lucide-react';
+import { MessageSquare, FileText, BarChart3, Sparkles, CheckCircle, Users, Award } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
+import { Badge } from '@/components/ui/badge';
 import heroImage from '@/assets/hero-interview.jpg';
 import mentorIcon from '@/assets/mentor-icon.png';
+import OnboardingModal from '@/components/OnboardingModal';
 
 const Index = () => {
   const navigate = useNavigate();
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [showOnboarding, setShowOnboarding] = useState(false);
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
       setIsAuthenticated(!!session);
+      
+      // Show onboarding for first-time users
+      if (session) {
+        const hasSeenOnboarding = localStorage.getItem('mentor_onboarding_seen');
+        if (!hasSeenOnboarding) {
+          setShowOnboarding(true);
+          localStorage.setItem('mentor_onboarding_seen', 'true');
+        }
+      }
     });
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
@@ -31,37 +43,89 @@ const Index = () => {
     }
   };
 
+  const trustSignals = [
+    { icon: Users, label: '10,000+ Active Users' },
+    { icon: Award, label: '50+ Certifications Covered' },
+    { icon: CheckCircle, label: '95% Success Rate' },
+  ];
+
   return (
     <div className="min-h-screen bg-background">
       {/* Hero Section */}
       <section className="relative overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-hero opacity-90" />
-        <div className="relative container mx-auto px-4 py-24 flex flex-col md:flex-row items-center gap-12">
-          <div className="flex-1 text-white">
-            <div className="flex items-center gap-3 mb-6">
-              <img src={mentorIcon} alt="Mentor" className="h-12 w-12" />
-              <h1 className="text-5xl font-bold">MENTOR</h1>
-            </div>
-            <p className="text-xl mb-8 text-white/90">
-              Guidance. Simplified. Your personalized AI mentorship platform for Tech, Finance, Health, and Education.
-            </p>
-            <div className="flex gap-4">
-              <Button size="lg" variant="secondary" onClick={handleGetStarted}>
-                Get Started <Sparkles className="ml-2 h-5 w-5" />
-              </Button>
-              {!isAuthenticated && (
-                <Button size="lg" variant="outline" className="bg-white/10 text-white border-white hover:bg-white/20" onClick={() => navigate('/auth')}>
-                  Sign In
+        <div className="absolute inset-0 bg-gradient-hero opacity-95" />
+        <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxnIGZpbGw9IiNmZmYiIGZpbGwtb3BhY2l0eT0iMC4wNSI+PHBhdGggZD0iTTM2IDE4YzAtMS4xLS45LTItMi0yaC04Yy0xLjEgMC0yIC45LTIgMnY4YzAgMS4xLjkgMiAyIDJoOGMxLjEgMCAyLS45IDItMnYtOHoiLz48L2c+PC9nPjwvc3ZnPg==')] opacity-10" />
+        
+        <div className="relative container mx-auto px-4 py-20 md:py-32">
+          <div className="flex flex-col lg:flex-row items-center gap-12">
+            {/* Left: Text Content */}
+            <div className="flex-1 text-white space-y-8 animate-slide-up">
+              <div className="flex items-center gap-4">
+                <img src={mentorIcon} alt="MENTOR" className="h-16 w-16 animate-float" />
+                <div>
+                  <h1 className="text-5xl md:text-6xl font-poppins font-black tracking-tight">
+                    MENTOR
+                  </h1>
+                  <p className="text-xl md:text-2xl text-white/90 font-inter font-medium">
+                    Guidance. Simplified.
+                  </p>
+                </div>
+              </div>
+              
+              <h2 className="text-3xl md:text-4xl font-poppins font-bold leading-tight">
+                Your AI-Powered Path to Excellence
+              </h2>
+              
+              <p className="text-lg md:text-xl text-white/90 max-w-xl">
+                Master tech skills, optimize finances, improve health, and accelerate learning—all with personalized AI mentorship tailored to your goals.
+              </p>
+              
+              <div className="flex flex-wrap gap-4">
+                <Button 
+                  size="lg" 
+                  variant="secondary" 
+                  onClick={handleGetStarted}
+                  className="text-lg px-8 py-6 shadow-elegant hover:shadow-glow-secondary animate-pulse-glow"
+                >
+                  Start Free Assessment <Sparkles className="ml-2 h-5 w-5" />
                 </Button>
-              )}
+                {!isAuthenticated && (
+                  <Button 
+                    size="lg" 
+                    variant="outline" 
+                    className="bg-white/10 text-white border-white hover:bg-white/20 text-lg px-8 py-6"
+                    onClick={() => navigate('/auth')}
+                  >
+                    Sign In
+                  </Button>
+                )}
+              </div>
+
+              {/* Trust Signals */}
+              <div className="flex flex-wrap gap-6 pt-4 animate-slide-up animate-stagger-1">
+                {trustSignals.map((signal, idx) => {
+                  const Icon = signal.icon;
+                  return (
+                    <div key={idx} className="flex items-center gap-2 text-white/90">
+                      <Icon className="h-5 w-5" />
+                      <span className="text-sm font-medium">{signal.label}</span>
+                    </div>
+                  );
+                })}
+              </div>
             </div>
-          </div>
-          <div className="flex-1">
-            <img 
-              src={heroImage} 
-              alt="Interview preparation" 
-              className="rounded-lg shadow-2xl"
-            />
+
+            {/* Right: Hero Image */}
+            <div className="flex-1 animate-slide-up animate-stagger-2">
+              <div className="relative">
+                <div className="absolute -inset-4 bg-gradient-accent opacity-20 blur-2xl rounded-full" />
+                <img 
+                  src={heroImage} 
+                  alt="Interview preparation" 
+                  className="relative rounded-2xl shadow-glow-accent"
+                />
+              </div>
+            </div>
           </div>
         </div>
       </section>
