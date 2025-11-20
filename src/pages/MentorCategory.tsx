@@ -2,7 +2,7 @@ import { useEffect, useMemo } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { MessageSquare, FileText, BookOpen, Sparkles, ArrowLeft, TrendingUp, Dumbbell, GraduationCap, Calculator, Activity, Brain } from "lucide-react";
+import { MessageSquare, FileText, BookOpen, Sparkles, ArrowLeft, TrendingUp, Dumbbell, GraduationCap, Calculator, Activity, Brain, Code2 } from "lucide-react";
 
 const categoryConfig = {
   tech: {
@@ -10,9 +10,10 @@ const categoryConfig = {
     description: "AI-guided tech prep: mock interviews, MCQ exams, resume insights, and career guidance.",
     heroIcon: MessageSquare,
     actions: [
-      { label: "Start MCQ Exam", to: "/exam-setup", variant: "default" as const },
-      { label: "Mock Interview", to: "/interview", variant: "outline" as const },
-      { label: "Resume Analyzer", to: "/resume", variant: "secondary" as const },
+      { label: "Start MCQ Exam", to: "/exam-setup", variant: "default" as const, icon: FileText },
+      { label: "Mock Interview", to: "/interview", variant: "outline" as const, icon: MessageSquare },
+      { label: "Coding Playground", to: "/coding-playground", variant: "outline" as const, icon: Code2 },
+      { label: "Resume Analyzer", to: "/resume", variant: "secondary" as const, icon: BookOpen },
     ],
   },
   finance: {
