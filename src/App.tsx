@@ -18,6 +18,7 @@ import FinanceDashboard from "./pages/FinanceDashboard";
 import BudgetPlanner from "./pages/BudgetPlanner";
 import InvestmentPlanner from "./pages/InvestmentPlanner";
 import FinancialGoals from "./pages/FinancialGoals";
+import CodingPlayground from "./pages/CodingPlayground";
 
 const queryClient = new QueryClient();
 
@@ -42,6 +43,7 @@ const App = () => (
           <Route path="/finance/budget" element={<BudgetPlanner />} />
           <Route path="/finance/investments" element={<InvestmentPlanner />} />
           <Route path="/finance/goals" element={<FinancialGoals />} />
+          <Route path="/coding-playground" element={<CodingPlayground />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
