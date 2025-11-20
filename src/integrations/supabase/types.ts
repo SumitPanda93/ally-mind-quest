@@ -86,6 +86,33 @@ export type Database = {
         }
         Relationships: []
       }
+      daily_footfall: {
+        Row: {
+          created_at: string
+          date: string
+          id: string
+          total_page_views: number
+          unique_visitors_count: number
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          date: string
+          id?: string
+          total_page_views?: number
+          unique_visitors_count?: number
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          date?: string
+          id?: string
+          total_page_views?: number
+          unique_visitors_count?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
       exam_results: {
         Row: {
           ai_feedback: string | null
@@ -294,6 +321,75 @@ export type Database = {
         }
         Relationships: []
       }
+      lifetime_visitors: {
+        Row: {
+          id: string
+          last_updated: string
+          total_unique_visitors: number
+        }
+        Insert: {
+          id?: string
+          last_updated?: string
+          total_unique_visitors?: number
+        }
+        Update: {
+          id?: string
+          last_updated?: string
+          total_unique_visitors?: number
+        }
+        Relationships: []
+      }
+      mentor_footfall: {
+        Row: {
+          created_at: string
+          date: string
+          id: string
+          mentor_category: string
+          total_visits: number
+          unique_visitors: number
+        }
+        Insert: {
+          created_at?: string
+          date: string
+          id?: string
+          mentor_category: string
+          total_visits?: number
+          unique_visitors?: number
+        }
+        Update: {
+          created_at?: string
+          date?: string
+          id?: string
+          mentor_category?: string
+          total_visits?: number
+          unique_visitors?: number
+        }
+        Relationships: []
+      }
+      page_visits: {
+        Row: {
+          id: string
+          page: string
+          session_id: string
+          user_id: string | null
+          visited_at: string
+        }
+        Insert: {
+          id?: string
+          page: string
+          session_id: string
+          user_id?: string | null
+          visited_at?: string
+        }
+        Update: {
+          id?: string
+          page?: string
+          session_id?: string
+          user_id?: string | null
+          visited_at?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           created_at: string | null
@@ -471,6 +567,57 @@ export type Database = {
         }
         Relationships: []
       }
+      user_roles: {
+        Row: {
+          created_at: string | null
+          id: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id?: string
+        }
+        Relationships: []
+      }
+      visitor_sessions: {
+        Row: {
+          created_at: string
+          id: string
+          last_ping: string
+          mentor_category: string | null
+          page: string
+          session_id: string
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          last_ping?: string
+          mentor_category?: string | null
+          page: string
+          session_id: string
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          last_ping?: string
+          mentor_category?: string | null
+          page?: string
+          session_id?: string
+          user_id?: string | null
+        }
+        Relationships: []
+      }
     }
     Views: {
       questions_without_answers: {
@@ -522,10 +669,17 @@ export type Database = {
       }
     }
     Functions: {
-      [_ in never]: never
+      cleanup_old_sessions: { Args: never; Returns: undefined }
+      has_role: {
+        Args: {
+          _role: Database["public"]["Enums"]["app_role"]
+          _user_id: string
+        }
+        Returns: boolean
+      }
     }
     Enums: {
-      [_ in never]: never
+      app_role: "admin" | "moderator" | "user"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -652,6 +806,8 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      app_role: ["admin", "moderator", "user"],
+    },
   },
 } as const
