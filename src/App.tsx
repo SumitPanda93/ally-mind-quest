@@ -14,6 +14,10 @@ import ExamResults from "./pages/ExamResults";
 import AdminDashboard from "./pages/AdminDashboard";
 import NotFound from "./pages/NotFound";
 import MentorCategory from "./pages/MentorCategory";
+import FinanceDashboard from "./pages/FinanceDashboard";
+import BudgetPlanner from "./pages/BudgetPlanner";
+import InvestmentPlanner from "./pages/InvestmentPlanner";
+import FinancialGoals from "./pages/FinancialGoals";
 
 const queryClient = new QueryClient();
 
@@ -34,6 +38,10 @@ const App = () => (
           <Route path="/exam-results/:examId" element={<ExamResults />} />
           <Route path="/admin" element={<AdminDashboard />} />
           <Route path="/mentor/:category" element={<MentorCategory />} />
+          <Route path="/finance/dashboard" element={<FinanceDashboard />} />
+          <Route path="/finance/budget" element={<BudgetPlanner />} />
+          <Route path="/finance/investments" element={<InvestmentPlanner />} />
+          <Route path="/finance/goals" element={<FinancialGoals />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
