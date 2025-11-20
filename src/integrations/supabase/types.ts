@@ -53,6 +53,39 @@ export type Database = {
         }
         Relationships: []
       }
+      code_snippets: {
+        Row: {
+          code: string
+          created_at: string
+          id: string
+          language: string
+          stdin: string | null
+          title: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          code: string
+          created_at?: string
+          id?: string
+          language: string
+          stdin?: string | null
+          title: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          code?: string
+          created_at?: string
+          id?: string
+          language?: string
+          stdin?: string | null
+          title?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       exam_results: {
         Row: {
           ai_feedback: string | null
