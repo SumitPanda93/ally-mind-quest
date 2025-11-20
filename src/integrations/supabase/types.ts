@@ -14,6 +14,45 @@ export type Database = {
   }
   public: {
     Tables: {
+      budgets: {
+        Row: {
+          categories: Json | null
+          created_at: string | null
+          id: string
+          month: number
+          savings: number | null
+          total_expenses: number | null
+          total_income: number | null
+          updated_at: string | null
+          user_id: string
+          year: number
+        }
+        Insert: {
+          categories?: Json | null
+          created_at?: string | null
+          id?: string
+          month: number
+          savings?: number | null
+          total_expenses?: number | null
+          total_income?: number | null
+          updated_at?: string | null
+          user_id: string
+          year: number
+        }
+        Update: {
+          categories?: Json | null
+          created_at?: string | null
+          id?: string
+          month?: number
+          savings?: number | null
+          total_expenses?: number | null
+          total_income?: number | null
+          updated_at?: string | null
+          user_id?: string
+          year?: number
+        }
+        Relationships: []
+      }
       exam_results: {
         Row: {
           ai_feedback: string | null
@@ -102,6 +141,122 @@ export type Database = {
           technology?: string
           time_limit_minutes?: number | null
           total_questions?: number
+          user_id?: string
+        }
+        Relationships: []
+      }
+      expenses: {
+        Row: {
+          amount: number
+          budget_id: string | null
+          category: string
+          created_at: string | null
+          date: string
+          description: string | null
+          id: string
+          user_id: string
+        }
+        Insert: {
+          amount: number
+          budget_id?: string | null
+          category: string
+          created_at?: string | null
+          date?: string
+          description?: string | null
+          id?: string
+          user_id: string
+        }
+        Update: {
+          amount?: number
+          budget_id?: string | null
+          category?: string
+          created_at?: string | null
+          date?: string
+          description?: string | null
+          id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "expenses_budget_id_fkey"
+            columns: ["budget_id"]
+            isOneToOne: false
+            referencedRelation: "budgets"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      financial_goals: {
+        Row: {
+          created_at: string | null
+          current_amount: number | null
+          deadline: string | null
+          goal_type: string
+          id: string
+          monthly_contribution: number | null
+          status: string | null
+          target_amount: number
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          current_amount?: number | null
+          deadline?: string | null
+          goal_type: string
+          id?: string
+          monthly_contribution?: number | null
+          status?: string | null
+          target_amount: number
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          current_amount?: number | null
+          deadline?: string | null
+          goal_type?: string
+          id?: string
+          monthly_contribution?: number | null
+          status?: string | null
+          target_amount?: number
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      investments: {
+        Row: {
+          amount: number
+          created_at: string | null
+          expected_return: number | null
+          id: string
+          investment_type: string
+          notes: string | null
+          risk_level: string | null
+          start_date: string | null
+          user_id: string
+        }
+        Insert: {
+          amount: number
+          created_at?: string | null
+          expected_return?: number | null
+          id?: string
+          investment_type: string
+          notes?: string | null
+          risk_level?: string | null
+          start_date?: string | null
+          user_id: string
+        }
+        Update: {
+          amount?: number
+          created_at?: string | null
+          expected_return?: number | null
+          id?: string
+          investment_type?: string
+          notes?: string | null
+          risk_level?: string | null
+          start_date?: string | null
           user_id?: string
         }
         Relationships: []
@@ -249,6 +404,39 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      user_financial_profiles: {
+        Row: {
+          age: number | null
+          created_at: string | null
+          financial_goals: Json | null
+          id: string
+          monthly_income: number | null
+          risk_profile: string | null
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          age?: number | null
+          created_at?: string | null
+          financial_goals?: Json | null
+          id?: string
+          monthly_income?: number | null
+          risk_profile?: string | null
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          age?: number | null
+          created_at?: string | null
+          financial_goals?: Json | null
+          id?: string
+          monthly_income?: number | null
+          risk_profile?: string | null
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
       }
     }
     Views: {
