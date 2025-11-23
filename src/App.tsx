@@ -13,6 +13,7 @@ import ExamSetup from "./pages/ExamSetup";
 import ExamTaking from "./pages/ExamTaking";
 import ExamResults from "./pages/ExamResults";
 import AdminDashboard from "./pages/AdminDashboard";
+import AdminSetup from "./pages/AdminSetup";
 import NotFound from "./pages/NotFound";
 import MentorCategory from "./pages/MentorCategory";
 import FinanceDashboard from "./pages/FinanceDashboard";
@@ -40,6 +41,7 @@ const AppContent = () => {
       <Route path="/exam/:examId" element={<ExamTaking />} />
       <Route path="/exam-results/:examId" element={<ExamResults />} />
       <Route path="/admin" element={<AdminDashboard />} />
+      <Route path="/admin-setup" element={<AdminSetup />} />
       <Route path="/analytics" element={<Analytics />} />
       <Route path="/mentor/:category" element={<MentorCategory />} />
       <Route path="/finance/dashboard" element={<FinanceDashboard />} />
