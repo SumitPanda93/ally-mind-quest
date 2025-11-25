@@ -396,8 +396,11 @@ export type Database = {
           email: string | null
           experience_level: string | null
           id: string
+          mobile: string | null
           name: string | null
           preferred_difficulty: string | null
+          profession: string | null
+          profile_picture_url: string | null
           technology: string | null
           updated_at: string | null
           user_id: string
@@ -407,8 +410,11 @@ export type Database = {
           email?: string | null
           experience_level?: string | null
           id?: string
+          mobile?: string | null
           name?: string | null
           preferred_difficulty?: string | null
+          profession?: string | null
+          profile_picture_url?: string | null
           technology?: string | null
           updated_at?: string | null
           user_id: string
@@ -418,8 +424,11 @@ export type Database = {
           email?: string | null
           experience_level?: string | null
           id?: string
+          mobile?: string | null
           name?: string | null
           preferred_difficulty?: string | null
+          profession?: string | null
+          profile_picture_url?: string | null
           technology?: string | null
           updated_at?: string | null
           user_id?: string

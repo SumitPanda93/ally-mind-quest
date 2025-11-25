@@ -2,7 +2,7 @@ import { useNavigate } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { MessageSquare, FileText, LogOut, BookOpen } from 'lucide-react';
+import { MessageSquare, FileText, LogOut, BookOpen, User } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { Badge } from '@/components/ui/badge';
@@ -80,10 +80,16 @@ const Dashboard = () => {
             <h1 className="text-4xl font-bold text-primary mb-2">Welcome to MENTOR</h1>
             <p className="text-muted-foreground">Your personalized AI mentorship platform</p>
           </div>
-          <Button variant="outline" onClick={handleSignOut}>
-            <LogOut className="mr-2 h-4 w-4" />
-            Sign Out
-          </Button>
+          <div className="flex gap-2">
+            <Button variant="outline" onClick={() => navigate('/profile')}>
+              <User className="mr-2 h-4 w-4" />
+              Profile
+            </Button>
+            <Button variant="outline" onClick={handleSignOut}>
+              <LogOut className="mr-2 h-4 w-4" />
+              Sign Out
+            </Button>
+          </div>
         </div>
 
         {/* Interactive Stats Cards */}
@@ -160,8 +166,7 @@ const Dashboard = () => {
             </Card>
 
             <Card 
-              className="cursor-pointer hover:shadow-elegant transition-all hover:-translate-y-1 bg-gradient-to-br from-accent/5 to-accent/10 opacity-60"
-              onClick={() => navigate('/mentor/health')}
+              className="relative bg-gradient-to-br from-accent/5 to-accent/10 opacity-60 cursor-not-allowed"
             >
               <CardHeader>
                 <div className="flex items-center gap-3">
@@ -182,8 +187,7 @@ const Dashboard = () => {
             </Card>
 
             <Card 
-              className="cursor-pointer hover:shadow-elegant transition-all hover:-translate-y-1 bg-gradient-to-br from-muted/5 to-muted/10 opacity-60"
-              onClick={() => navigate('/mentor/education')}
+              className="relative bg-gradient-to-br from-muted/5 to-muted/10 opacity-60 cursor-not-allowed"
             >
               <CardHeader>
                 <div className="flex items-center gap-3">
