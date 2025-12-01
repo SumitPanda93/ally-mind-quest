@@ -166,7 +166,7 @@ const Dashboard = () => {
             </Card>
 
             <Card 
-              className="relative bg-gradient-to-br from-accent/5 to-accent/10 opacity-60 cursor-not-allowed"
+              className="relative bg-gradient-to-br from-accent/5 to-accent/10 opacity-60 pointer-events-none"
             >
               <CardHeader>
                 <div className="flex items-center gap-3">
@@ -187,7 +187,7 @@ const Dashboard = () => {
             </Card>
 
             <Card 
-              className="relative bg-gradient-to-br from-muted/5 to-muted/10 opacity-60 cursor-not-allowed"
+              className="relative bg-gradient-to-br from-muted/5 to-muted/10 opacity-60 pointer-events-none"
             >
               <CardHeader>
                 <div className="flex items-center gap-3">

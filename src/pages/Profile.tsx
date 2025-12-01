@@ -273,6 +273,81 @@ const Profile = () => {
             </form>
           </CardContent>
         </Card>
+
+        {/* Change Password Card */}
+        <Card className="mt-6">
+          <CardHeader>
+            <CardTitle className="text-2xl">Change Password</CardTitle>
+            <CardDescription>Update your account password</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <form onSubmit={async (e) => {
+              e.preventDefault();
+              setIsLoading(true);
+              
+              const formData = new FormData(e.currentTarget);
+              const newPassword = formData.get('new-password') as string;
+              const confirmPassword = formData.get('confirm-password') as string;
+              
+              if (newPassword !== confirmPassword) {
+                toast.error('Passwords do not match');
+                setIsLoading(false);
+                return;
+              }
+              
+              if (!/^(?=.*[A-Z])(?=.*\d).{8,}$/.test(newPassword)) {
+                toast.error('Password must be at least 8 characters with one number and one uppercase letter');
+                setIsLoading(false);
+                return;
+              }
+              
+              try {
+                const { error } = await supabase.auth.updateUser({
+                  password: newPassword
+                });
+                
+                if (error) throw error;
+                
+                toast.success('Password changed successfully!');
+                (e.target as HTMLFormElement).reset();
+              } catch (error: any) {
+                console.error('Password change error:', error);
+                toast.error(error.message || 'Failed to change password');
+              } finally {
+                setIsLoading(false);
+              }
+            }} className="space-y-4">
+              <div>
+                <Label htmlFor="new-password">New Password *</Label>
+                <Input
+                  id="new-password"
+                  name="new-password"
+                  type="password"
+                  placeholder="Enter new password"
+                  required
+                />
+                <p className="text-xs text-muted-foreground mt-1">
+                  Min 8 characters, one number, one uppercase
+                </p>
+              </div>
+              
+              <div>
+                <Label htmlFor="confirm-password">Confirm Password *</Label>
+                <Input
+                  id="confirm-password"
+                  name="confirm-password"
+                  type="password"
+                  placeholder="Confirm new password"
+                  required
+                />
+              </div>
+              
+              <Button type="submit" className="w-full" disabled={isLoading}>
+                {isLoading ? 'Changing Password...' : 'Change Password'}
+              </Button>
+            </form>
+          </CardContent>
+        </Card>
       </div>
     </div>
   );
