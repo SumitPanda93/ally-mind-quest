@@ -100,6 +100,27 @@ const Auth = () => {
     }
 
     try {
+      // Check for duplicate email or mobile
+      const { data: existingProfiles } = await supabase
+        .from('profiles')
+        .select('email, mobile')
+        .or(`email.eq.${email},mobile.eq.${mobile}`);
+
+      if (existingProfiles && existingProfiles.length > 0) {
+        const duplicateEmail = existingProfiles.some(p => p.email === email);
+        const duplicateMobile = existingProfiles.some(p => p.mobile === mobile);
+        
+        if (duplicateEmail && duplicateMobile) {
+          toast.error('Email and mobile number are already registered');
+        } else if (duplicateEmail) {
+          toast.error('Email is already registered');
+        } else {
+          toast.error('Mobile number is already registered');
+        }
+        setIsLoading(false);
+        return;
+      }
+
       const { data, error } = await supabase.auth.signUp({
         email,
         password,
@@ -135,9 +156,12 @@ const Auth = () => {
 
         if (profileError) {
           console.error('Profile creation error:', profileError);
+          toast.error('Failed to create profile. Please contact support.');
+          setIsLoading(false);
+          return;
         }
 
-        toast.success('Account created successfully! Redirecting to dashboard...');
+        toast.success('Account created! Please check your email to verify your account.');
       }
     } catch (error: any) {
       console.error('Signup error:', error);
@@ -205,22 +229,32 @@ const Auth = () => {
 
     setIsLoading(true);
     try {
+      let verifyResult;
+      
       if (otpFlow === 'email') {
-        const { error } = await supabase.auth.verifyOtp({
+        verifyResult = await supabase.auth.verifyOtp({
           email: emailOrMobile,
           token: otpValue,
           type: 'email'
         });
-        
-        if (error) throw error;
       } else {
-        const { error } = await supabase.auth.verifyOtp({
+        verifyResult = await supabase.auth.verifyOtp({
           phone: `+91${emailOrMobile}`,
           token: otpValue,
           type: 'sms'
         });
-        
-        if (error) throw error;
+      }
+      
+      if (verifyResult.error) throw verifyResult.error;
+
+      // Check email confirmation status
+      const { data: { user } } = await supabase.auth.getUser();
+      
+      if (user && !user.email_confirmed_at) {
+        toast.error('Please verify your email before signing in. Check your inbox for the confirmation link.');
+        await supabase.auth.signOut();
+        setIsLoading(false);
+        return;
       }
 
       toast.success('Signed in successfully!');
