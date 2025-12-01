@@ -188,6 +188,10 @@ const Auth = () => {
     }
 
     try {
+      // Send OTP to both email and mobile if possible
+      let emailSent = false;
+      let mobileSent = false;
+      
       if (isEmail) {
         const { error } = await supabase.auth.signInWithOtp({
           email: emailOrMobile,
@@ -196,11 +200,13 @@ const Auth = () => {
           }
         });
         
-        if (error) throw error;
-        setOtpFlow('email');
-        setOtpSent(true);
-        toast.success('OTP sent to your email!');
-      } else {
+        if (!error) {
+          emailSent = true;
+          setOtpFlow('email');
+        }
+      }
+      
+      if (isMobile) {
         const { error } = await supabase.auth.signInWithOtp({
           phone: `+91${emailOrMobile}`,
           options: {
@@ -208,10 +214,23 @@ const Auth = () => {
           }
         });
         
-        if (error) throw error;
-        setOtpFlow('mobile');
+        if (!error) {
+          mobileSent = true;
+          setOtpFlow('mobile');
+        }
+      }
+      
+      if (emailSent || mobileSent) {
         setOtpSent(true);
-        toast.success('OTP sent to your mobile!');
+        if (emailSent && mobileSent) {
+          toast.success('OTP sent to both your email and mobile!');
+        } else if (emailSent) {
+          toast.success('OTP sent to your email!');
+        } else {
+          toast.success('OTP sent to your mobile!');
+        }
+      } else {
+        throw new Error('Failed to send OTP');
       }
     } catch (error: any) {
       console.error('OTP send error:', error);
@@ -439,11 +458,78 @@ const Auth = () => {
           <CardDescription>Guidance. Simplified.</CardDescription>
         </CardHeader>
         <CardContent>
-          <Tabs defaultValue="otp" className="w-full">
-            <TabsList className="grid w-full grid-cols-2">
-              <TabsTrigger value="otp">OTP Login</TabsTrigger>
+          <Tabs defaultValue="password" className="w-full">
+            <TabsList className="grid w-full grid-cols-3">
+              <TabsTrigger value="password">Password</TabsTrigger>
+              <TabsTrigger value="otp">OTP</TabsTrigger>
               <TabsTrigger value="signup">Sign Up</TabsTrigger>
             </TabsList>
+            
+            <TabsContent value="password" className="space-y-4">
+              <form onSubmit={async (e) => {
+                e.preventDefault();
+                setIsLoading(true);
+                const formData = new FormData(e.currentTarget);
+                const email = formData.get('login-email') as string;
+                const password = formData.get('login-password') as string;
+                
+                try {
+                  const { data, error } = await supabase.auth.signInWithPassword({
+                    email,
+                    password
+                  });
+                  
+                  if (error) throw error;
+                  
+                  // Check email confirmation
+                  if (data.user && !data.user.email_confirmed_at) {
+                    toast.error('Please verify your email before signing in. Check your inbox for the confirmation link.');
+                    await supabase.auth.signOut();
+                    setIsLoading(false);
+                    return;
+                  }
+                  
+                  toast.success('Signed in successfully!');
+                  navigate('/dashboard');
+                } catch (error: any) {
+                  toast.error(error.message || 'Failed to sign in');
+                } finally {
+                  setIsLoading(false);
+                }
+              }} className="space-y-4">
+                <div>
+                  <Label htmlFor="login-email">Email</Label>
+                  <Input
+                    id="login-email"
+                    name="login-email"
+                    type="email"
+                    placeholder="you@example.com"
+                    required
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="login-password">Password</Label>
+                  <Input
+                    id="login-password"
+                    name="login-password"
+                    type="password"
+                    placeholder="Enter your password"
+                    required
+                  />
+                </div>
+                <Button type="submit" className="w-full" disabled={isLoading}>
+                  {isLoading ? 'Signing in...' : 'Sign In'}
+                </Button>
+                <Button 
+                  type="button"
+                  variant="link" 
+                  onClick={() => setForgotPasswordFlow(true)} 
+                  className="w-full"
+                >
+                  Forgot Password?
+                </Button>
+              </form>
+            </TabsContent>
             
             <TabsContent value="otp" className="space-y-4">
               <div>
@@ -457,18 +543,11 @@ const Auth = () => {
                   required
                 />
                 <p className="text-xs text-muted-foreground mt-1">
-                  Enter your email or 10-digit mobile number
+                  OTP will be sent to both your email and mobile number
                 </p>
               </div>
               <Button onClick={handleSendOtp} className="w-full" disabled={isLoading}>
                 {isLoading ? 'Sending OTP...' : 'Send OTP'}
-              </Button>
-              <Button 
-                variant="link" 
-                onClick={() => setForgotPasswordFlow(true)} 
-                className="w-full"
-              >
-                Forgot Password?
               </Button>
             </TabsContent>
             
