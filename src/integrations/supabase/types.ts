@@ -53,6 +53,48 @@ export type Database = {
         }
         Relationships: []
       }
+      carts: {
+        Row: {
+          created_at: string | null
+          id: string
+          product_id: string
+          quantity: number
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          product_id: string
+          quantity?: number
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          product_id?: string
+          quantity?: number
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "carts_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "carts_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["user_id"]
+          },
+        ]
+      }
       code_snippets: {
         Row: {
           code: string
@@ -390,6 +432,56 @@ export type Database = {
         }
         Relationships: []
       }
+      products: {
+        Row: {
+          category: string | null
+          created_at: string | null
+          description: string | null
+          district: string
+          id: string
+          image_url: string | null
+          name: string
+          price: number
+          seller_id: string
+          stock_quantity: number | null
+          updated_at: string | null
+        }
+        Insert: {
+          category?: string | null
+          created_at?: string | null
+          description?: string | null
+          district: string
+          id?: string
+          image_url?: string | null
+          name: string
+          price: number
+          seller_id: string
+          stock_quantity?: number | null
+          updated_at?: string | null
+        }
+        Update: {
+          category?: string | null
+          created_at?: string | null
+          description?: string | null
+          district?: string
+          id?: string
+          image_url?: string | null
+          name?: string
+          price?: number
+          seller_id?: string
+          stock_quantity?: number | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "products_seller_id_fkey"
+            columns: ["seller_id"]
+            isOneToOne: false
+            referencedRelation: "sellers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       profiles: {
         Row: {
           created_at: string | null
@@ -485,6 +577,41 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "exams"
             referencedColumns: ["id"]
+          },
+        ]
+      }
+      sellers: {
+        Row: {
+          business_name: string
+          created_at: string | null
+          district: string
+          id: string
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          business_name: string
+          created_at?: string | null
+          district: string
+          id?: string
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          business_name?: string
+          created_at?: string | null
+          district?: string
+          id?: string
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "sellers_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: true
+            referencedRelation: "profiles"
+            referencedColumns: ["user_id"]
           },
         ]
       }
